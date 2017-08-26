@@ -66,7 +66,7 @@ proc vTclWindow.top37 {base} {
         -menu "$top.m38" -background {#d9d9d9} -highlightbackground {#d9d9d9} \
         -highlightcolor black 
     wm focusmodel $top passive
-    wm geometry $top 1000x590+377+188
+    wm geometry $top 1000x590+316+156
     update
     # set in toplevel.wgt.
     global vTcl
@@ -173,8 +173,8 @@ proc vTclWindow.top37 {base} {
         -takefocus {} 
     vTcl:DefineAlias "$top.tCo56" "funcionCombo" vTcl:WidgetProc "Toplevel1" 1
     vTcl::widgets::ttk::scrolledlistbox::CreateCmd $top.scr58 \
-        -background {#d9d9d9} -height 148 -highlightbackground {#d9d9d9} \
-        -highlightcolor black -width 330 
+        -background {#d9d9d9} -height 75 -highlightbackground {#d9d9d9} \
+        -highlightcolor black -width 125 
     vTcl:DefineAlias "$top.scr58" "Scrolledlistbox1" vTcl:WidgetProc "Toplevel1" 1
 
     $top.scr58.01 configure -background white \
@@ -200,8 +200,8 @@ proc vTclWindow.top37 {base} {
         -highlightcolor black -pady 0 -text Desconectar 
     vTcl:DefineAlias "$top.but60" "desconectarBtn" vTcl:WidgetProc "Toplevel1" 1
     vTcl::widgets::ttk::scrolledlistbox::CreateCmd $top.cpd61 \
-        -background {#d9d9d9} -height 148 -highlightbackground {#d9d9d9} \
-        -highlightcolor black -width 330 
+        -background {#d9d9d9} -height 75 -highlightbackground {#d9d9d9} \
+        -highlightcolor black -width 125 
     vTcl:DefineAlias "$top.cpd61" "Scrolledlistbox2" vTcl:WidgetProc "Toplevel1" 1
 
     $top.cpd61.01 configure -background white \
@@ -215,8 +215,8 @@ proc vTclWindow.top37 {base} {
         -selectforeground black \
         -width 10
     vTcl::widgets::ttk::scrolledlistbox::CreateCmd $top.cpd62 \
-        -background {#d9d9d9} -height 188 -highlightbackground {#d9d9d9} \
-        -highlightcolor black -width 680 
+        -background {#d9d9d9} -height 75 -highlightbackground {#d9d9d9} \
+        -highlightcolor black -width 125 
     vTcl:DefineAlias "$top.cpd62" "Scrolledlistbox3" vTcl:WidgetProc "Toplevel1" 1
 
     $top.cpd62.01 configure -background white \
@@ -260,8 +260,10 @@ proc vTclWindow.top37 {base} {
         -highlightcolor black -text {Tramas de Respuesta} 
     vTcl:DefineAlias "$top.lab67" "Label11" vTcl:WidgetProc "Toplevel1" 1
     label $top.lab37 \
+        -activebackground {#f9f9f9} -activeforeground black \
         -background {#d9d9d9} -disabledforeground {#a3a3a3} \
-        -foreground {#000000} -text Respuestas 
+        -foreground {#000000} -highlightbackground {#d9d9d9} \
+        -highlightcolor black -text Respuestas 
     vTcl:DefineAlias "$top.lab37" "Label9" vTcl:WidgetProc "Toplevel1" 1
     menu $top.m38 \
         -activebackground {#d8d8d8} -activeforeground {#000000} \
@@ -334,13 +336,13 @@ proc vTclWindow.top37 {base} {
         -in $top -x 270 -y 390 -width 680 -relwidth 0 -height 188 \
         -relheight 0 -anchor nw -bordermode inside 
     place $top.but63 \
-        -in $top -x 60 -y 390 -width 120 -height 40 -anchor nw \
-        -bordermode ignore 
+        -in $top -x 60 -y 390 -width 120 -relwidth 0 -height 40 -relheight 0 \
+        -anchor nw -bordermode ignore 
     place $top.but64 \
-        -in $top -x 60 -y 440 -width 120 -relwidth 0 -height 40 -relheight 0 \
+        -in $top -x 60 -y 435 -width 120 -relwidth 0 -height 40 -relheight 0 \
         -anchor nw -bordermode ignore 
     place $top.but65 \
-        -in $top -x 60 -y 490 -width 120 -relwidth 0 -height 40 -relheight 0 \
+        -in $top -x 60 -y 480 -width 120 -relwidth 0 -height 40 -relheight 0 \
         -anchor nw -bordermode ignore 
     place $top.lab66 \
         -in $top -x 340 -y 150 -width 200 -anchor nw -bordermode ignore 
