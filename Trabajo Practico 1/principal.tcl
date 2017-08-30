@@ -66,7 +66,7 @@ proc vTclWindow.top37 {base} {
         -menu "$top.m38" -background {#d9d9d9} -highlightbackground {#d9d9d9} \
         -highlightcolor black 
     wm focusmodel $top passive
-    wm geometry $top 1000x590+316+156
+    wm geometry $top 1000x590+763+139
     update
     # set in toplevel.wgt.
     global vTcl
@@ -195,9 +195,10 @@ proc vTclWindow.top37 {base} {
     vTcl:DefineAlias "$top.but59" "conectarBtn" vTcl:WidgetProc "Toplevel1" 1
     button $top.but60 \
         -activebackground {#d9d9d9} -activeforeground {#000000} \
-        -background {#d9d9d9} -disabledforeground {#a3a3a3} \
-        -foreground {#000000} -highlightbackground {#d9d9d9} \
-        -highlightcolor black -pady 0 -text Desconectar 
+        -background {#d9d9d9} -command desconectar \
+        -disabledforeground {#a3a3a3} -foreground {#000000} \
+        -highlightbackground {#d9d9d9} -highlightcolor black -pady 0 \
+        -text Desconectar 
     vTcl:DefineAlias "$top.but60" "desconectarBtn" vTcl:WidgetProc "Toplevel1" 1
     vTcl::widgets::ttk::scrolledlistbox::CreateCmd $top.cpd61 \
         -background {#d9d9d9} -height 75 -highlightbackground {#d9d9d9} \
@@ -231,21 +232,24 @@ proc vTclWindow.top37 {base} {
         -width 10
     button $top.but63 \
         -activebackground {#d9d9d9} -activeforeground {#000000} \
-        -background {#d9d9d9} -disabledforeground {#a3a3a3} \
-        -foreground {#000000} -highlightbackground {#d9d9d9} \
-        -highlightcolor black -pady 0 -text Hexadecimal 
+        -background {#d9d9d9} -command convertirHexadecimal \
+        -disabledforeground {#a3a3a3} -foreground {#000000} \
+        -highlightbackground {#d9d9d9} -highlightcolor black -pady 0 \
+        -text Hexadecimal 
     vTcl:DefineAlias "$top.but63" "hexaBtn" vTcl:WidgetProc "Toplevel1" 1
     button $top.but64 \
         -activebackground {#d9d9d9} -activeforeground {#000000} \
-        -background {#d9d9d9} -disabledforeground {#a3a3a3} \
-        -foreground {#000000} -highlightbackground {#d9d9d9} \
-        -highlightcolor black -pady 0 -text Decimal 
+        -background {#d9d9d9} -command convertirDecimal \
+        -disabledforeground {#a3a3a3} -foreground {#000000} \
+        -highlightbackground {#d9d9d9} -highlightcolor black -pady 0 \
+        -text Decimal 
     vTcl:DefineAlias "$top.but64" "decimalBtn" vTcl:WidgetProc "Toplevel1" 1
     button $top.but65 \
         -activebackground {#d9d9d9} -activeforeground {#000000} \
-        -background {#d9d9d9} -disabledforeground {#a3a3a3} \
-        -foreground {#000000} -highlightbackground {#d9d9d9} \
-        -highlightcolor black -pady 0 -text Binario 
+        -background {#d9d9d9} -command convertirBinario \
+        -disabledforeground {#a3a3a3} -foreground {#000000} \
+        -highlightbackground {#d9d9d9} -highlightcolor black -pady 0 \
+        -text Binario 
     vTcl:DefineAlias "$top.but65" "binarioBtn" vTcl:WidgetProc "Toplevel1" 1
     label $top.lab66 \
         -activebackground {#f9f9f9} -activeforeground black \
@@ -269,6 +273,10 @@ proc vTclWindow.top37 {base} {
         -activebackground {#d8d8d8} -activeforeground {#000000} \
         -background {#d9d9d9} -font TkMenuFont -foreground {#000000} \
         -tearoff 0 
+    label $top.lab38 \
+        -background {#d9d9d9} -disabledforeground {#a3a3a3} \
+        -foreground {#000000} -text Desconectado 
+    vTcl:DefineAlias "$top.lab38" "estadoLabel" vTcl:WidgetProc "Toplevel1" 1
     ###################
     # SETTING GEOMETRY
     ###################
@@ -351,6 +359,8 @@ proc vTclWindow.top37 {base} {
     place $top.lab37 \
         -in $top -x 500 -y 350 -width 200 -relwidth 0 -height 31 -relheight 0 \
         -anchor nw -bordermode ignore 
+    place $top.lab38 \
+        -in $top -x 60 -y 330 -anchor nw -bordermode ignore 
 
     vTcl:FireEvent $base <<Ready>>
 }
