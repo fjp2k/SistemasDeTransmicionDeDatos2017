@@ -6,6 +6,7 @@
 
 
 import sys
+from conexion import  Conexion
 
 try:
     from Tkinter import *
@@ -25,14 +26,14 @@ def set_Tk_var():
 
 def conectar():
     print('principal_support.conectar')
-    w.puertoEntry.get()
-    w.dispositivoEntry.get()
-    w.direccionEntry.get()
-    w.timeoutEntry.get()
-    w.baudiosEntry.get()
-    w.variablesEntry.get()
-    w.intentosEntry.get()
-    w.Scrolledlistbox1.insert(1,"hola")
+    conectado = conexion.conexion_puerto(puerto=w.puertoEntry.get(), baudrate = w.baudiosEntry.get(), timeout =w.timeoutEntry.get(),
+                                         intentos=w.intentosEntry.get(), funcion=03, dispositivo=w.dispositivoEntry.get(),
+                                         direccion=w.direccionEntry.get(), cantidadRegistros=w.variablesEntry.get())
+    if (conectado):
+        w.estadoLabel.config(text='Conectado')
+        conexion.obtenerRespuestas()
+    else:
+        w.estadoLabel.config(text='Error al conectar')
     sys.stdout.flush()
 
 def convertirBinario():
@@ -52,10 +53,11 @@ def desconectar():
     sys.stdout.flush()
 
 def init(top, gui, *args, **kwargs):
-    global w, top_level, root
+    global w, top_level, root, conexion
     w = gui
     top_level = top
     root = top
+    conexion = Conexion(gui=w)
 
 def destroy_window():
     # Function which closes the window.
@@ -67,7 +69,3 @@ if __name__ == '__main__':
     import principal
 
     principal.vp_start_gui()
-
-
-
-
