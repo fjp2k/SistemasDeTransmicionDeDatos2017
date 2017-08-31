@@ -299,7 +299,7 @@ class Trabajo_Practico_1:
         self.conectarBtn.configure(highlightcolor="black")
         self.conectarBtn.configure(pady="0")
         self.conectarBtn.configure(text='''Conectar''')
-        self.conectarBtn.
+
 
         self.desconectarBtn = Button(top)
         self.desconectarBtn.place(relx=0.06, rely=0.42, height=50, width=120)
