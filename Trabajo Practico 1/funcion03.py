@@ -145,10 +145,3 @@ def obtenerRespuestas():
                         time.sleep(2)
 
 
-#empieza aca
-
-conexion=conexionPuerto(puerto,baudrate,timeout)
-if(conexion):
-    obtenerRespuestas()
-else:
-    print("No hay conexion")
