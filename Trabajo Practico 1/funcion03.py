@@ -12,7 +12,7 @@ timeout=1
 dispositivo = 01
 funcion = 03
 direccion = 0001
-cantidadRegistros=200
+cantidadRegistros=129
 ser = serial.Serial()
 
 #procedimientos
@@ -33,7 +33,7 @@ def conexionPuerto(puerto,baudrate,timeout):
 
 def desconectarPuerto():
     ser.close()
-    return True
+    exit();
 
 def calc(data):
     crc_tab16 = [0X0000, 0XC0C1, 0XC181, 0X0140, 0XC301, 0X03C0, 0X0280, 0XC241,
@@ -111,42 +111,44 @@ def obtenerTrama(dispositivo,funcion,direccion,registros):
     crc = calc(read_device)
     return (read_device+crc)
 
-#comienzo sistema
+#tuve que crear este metodo porque cuando importaba funcion03 desde funcion06 se ejecutaba lo que no estaba dentro de funciones
+#lo que debemos hacer es llamar al metodo conexionPuerto, si nos devuelve true devemos llamar a obtener respuestas y ese se encarga
+#de_todo despues
 
-#mediante la llamada de este procedicimiento obtenemos la conexion al puerto
+def obtenerRespuestas():
+   while(intentos>0):
+            if(cantidadRegistros<=125):
+                print("Iteraciones: 1")
+                tramaEnvio = obtenerTrama(dispositivo, funcion, direccion, cantidadRegistros)
+                comunicacionPuerto(tramaEnvio)
+                time.sleep(10)
+            else:
+                totalPedidos=cantidadRegistros*2
+                totalBytes=totalPedidos/float(250)
+                iteraciones = math.ceil(totalBytes)
+                print("Iteraciones: %d" %iteraciones)
+                registros=125
+                registrosRecorridos=0
+                i=1
+                while(i<=iteraciones):
+                    print("Iteracion: %d"%i)
+                    if(i!=iteraciones):
+                        i += 1
+                        tramaEnviar= obtenerTrama(dispositivo,funcion,registrosRecorridos,registros)
+                        comunicacionPuerto(tramaEnviar)
+                        registrosRecorridos += 125
+                        time.sleep(2)
+                    else:
+                        registrosRestantes=cantidadRegistros-registrosRecorridos
+                        tramaEnviar=obtenerTrama(dispositivo,funcion,registrosRecorridos,registrosRestantes)
+                        comunicacionPuerto(tramaEnviar)
+                        time.sleep(2)
+
+
+#empieza aca
+
 conexion=conexionPuerto(puerto,baudrate,timeout)
-if(conexion==False):
-    print("No hay conexion")
+if(conexion):
+    obtenerRespuestas()
 else:
-    print("Hay conexion")
-
-    #hay que enlazar el resto para que cuando apretemos el boton conectar haga todo
-while(intentos>0):
-        if(cantidadRegistros<=125):
-            tramaEnvio = obtenerTrama(dispositivo, funcion, direccion, cantidadRegistros)
-            comunicacionPuerto(tramaEnvio)
-            time.sleep(10)
-        else:
-            totalPedidos=cantidadRegistros*2
-            totalBytes=totalPedidos/float(250)
-            iteraciones = math.ceil(totalBytes)
-            print("Iteraciones: %d" %iteraciones)
-            registros=125
-            registrosRecorridos=0
-            i=1
-            while(i<=iteraciones):
-                if(i!=iteraciones):
-                    i += 1
-                    tramaEnviar= obtenerTrama(dispositivo,funcion,registrosRecorridos,registros)
-                    comunicacionPuerto(tramaEnviar)
-                    registrosRecorridos += 125
-                    time.sleep(2)
-                else:
-                    registrosRestantes=cantidadRegistros-registrosRecorridos
-                    tramaEnviar=obtenerTrama(dispositivo,funcion,registrosRecorridos,registrosRestantes)
-                    comunicacionPuerto(tramaEnviar)
-                    time.sleep(2)
-
-
-ser.close()
-exit();
+    print("No hay conexion")

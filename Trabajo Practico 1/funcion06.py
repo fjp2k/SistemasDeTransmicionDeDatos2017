@@ -1,4 +1,5 @@
 import serial
+import funcion03
 
 puertoEnvia=serial.Serial()
 puertoRecibe=serial.Serial()
@@ -13,8 +14,9 @@ def solicitud():
     puertoEnvia.timeout=1
     puertoEnvia.open()
     if(puertoEnvia.is_open):
-        #generarTrama()
         print "que onda"
+        generarTrama()
+
 
 def generarTrama():
     dispositivoTrama=('%.2x'%dispositivo)
@@ -23,7 +25,7 @@ def generarTrama():
     registrosTrama=('%.4x'%registos)
     print("estamos aca")
 
-    #tramaEnvia= funcion03.obtenerTrama(dispositivo,funcion,dispositivo,registos)
-    #print(tramaEnvia)
+    tramaEnvia= funcion03.obtenerTrama(dispositivoTrama,funcionTrama,direccionTrama,registrosTrama)
+    print(tramaEnvia)
 solicitud()
 
