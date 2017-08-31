@@ -32,6 +32,7 @@ def conectar():
     w.baudiosEntry.get()
     w.variablesEntry.get()
     w.intentosEntry.get()
+    w.Scrolledlistbox1.insert(1,"hola")
     sys.stdout.flush()
 
 def convertirBinario():
@@ -64,6 +65,9 @@ def destroy_window():
 
 if __name__ == '__main__':
     import principal
+
     principal.vp_start_gui()
+
+
 
 
