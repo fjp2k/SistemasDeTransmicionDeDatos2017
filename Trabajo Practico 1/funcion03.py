@@ -12,7 +12,7 @@ timeout=1
 dispositivo = 01
 funcion = 03
 direccion = 0001
-cantidadRegistros=129
+cantidadRegistros=10
 ser = serial.Serial()
 
 #procedimientos
