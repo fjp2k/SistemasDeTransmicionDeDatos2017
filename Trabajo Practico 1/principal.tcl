@@ -66,7 +66,7 @@ proc vTclWindow.top37 {base} {
         -menu "$top.m38" -background {#d9d9d9} -highlightbackground {#d9d9d9} \
         -highlightcolor black 
     wm focusmodel $top passive
-    wm geometry $top 1000x590+763+139
+    wm geometry $top 1000x590+271+161
     update
     # set in toplevel.wgt.
     global vTcl
