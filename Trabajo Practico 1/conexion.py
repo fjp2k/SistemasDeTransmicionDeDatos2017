@@ -3,8 +3,9 @@ import binascii
 import time
 import math
 import principal_support
+import threading
 
-class Conexion:
+class Conexion():
 
     def __init__(self, gui):
 
@@ -22,6 +23,7 @@ class Conexion:
         self.dispositivo = 0
         self.direccion = 0
         self.cantidadRegistros = 0
+        self.trama = ''
 
     def conexion_puerto(self, puerto, baudrate, timeout, intentos, funcion, dispositivo, direccion, cantidadRegistros):
         self.puerto = puerto
@@ -55,6 +57,10 @@ class Conexion:
         self.gui.Scrolledlistbox2.insert(1, trama)
 
     def obtenerRespuestas(self):
+        t1 = threading.Thread(target=self.obtenerRespuestas_thread)
+        t1.start()
+
+    def obtenerRespuestas_thread(self):
         while (self.intentos > 0):
             if (self.cantidadRegistros <= 125):
                 print("Iteraciones: 1")
@@ -73,13 +79,13 @@ class Conexion:
                     print("Iteracion: %d" % i)
                     if (i != iteraciones):
                         i += 1
-                        tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, self.registrosRecorridos, self.registros)
+                        tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos, registros)
                         self.comunicacionPuerto(tramaEnviar)
                         registrosRecorridos += 125
                         time.sleep(2)
                     else:
-                        registrosRestantes = cantidadRegistros - registrosRecorridos
-                        tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, self.registrosRecorridos, self.registrosRestantes)
+                        registrosRestantes = self.cantidadRegistros - registrosRecorridos
+                        tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos, registrosRestantes)
                         self.comunicacionPuerto(tramaEnviar)
                         time.sleep(2)
 
@@ -141,11 +147,12 @@ class Conexion:
         return crc[2:] + crc[:2]
 
     def comunicacionPuerto(self, trama):
-        print("Trama Solicitud: %s" % trama)
-        self.imprimir_trama_enviada(trama)
+        self.trama = trama
+        print("Trama Solicitud: %s" % self.trama)
+        self.imprimir_trama_enviada(self.trama)
         print("\n")
 
-        self.ser.write(binascii.unhexlify(trama))
+        self.ser.write(binascii.unhexlify(self.trama))
         mensaje = binascii.hexlify(self.ser.read(5 + self.cantidadRegistros * 2))
         print("Trama devuelta: %s" % mensaje)
         self.imprimir_trama_recibida(mensaje)
