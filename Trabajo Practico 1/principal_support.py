@@ -31,11 +31,13 @@ def conectar():
                                          intentos=w.intentosEntry.get(), funcion=03,
                                          dispositivo=w.dispositivoEntry.get(),
                                          direccion=w.direccionEntry.get(), cantidadRegistros=w.variablesEntry.get())
+
     if (conectado):
         w.estadoLabel.config(text='Conectado')
         conexion.obtenerRespuestas()
     else:
         w.estadoLabel.config(text='Error al conectar')
+
     sys.stdout.flush()
 
 def convertirBinario():

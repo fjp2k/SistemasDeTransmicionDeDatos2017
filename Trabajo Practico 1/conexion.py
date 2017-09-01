@@ -79,7 +79,9 @@ class Conexion():
                     print("Iteracion: %d" % i)
                     if (i != iteraciones):
                         i += 1
+
                         tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos, registros)
+
                         self.comunicacionPuerto(tramaEnviar)
                         registrosRecorridos += 125
                         time.sleep(2)

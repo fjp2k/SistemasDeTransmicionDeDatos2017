@@ -6,13 +6,13 @@ import math
 
 intentos = 3
 segundos = 3
-puerto="COM4"
+puerto="COM3"
 baudrate=9600
 timeout=1
 dispositivo = 01
 funcion = 03
 direccion = 0001
-cantidadRegistros=129
+cantidadRegistros=10
 ser = serial.Serial()
 
 #procedimientos
