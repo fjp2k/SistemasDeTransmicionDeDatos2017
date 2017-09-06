@@ -4,7 +4,7 @@ import time
 import math
 import principal_support
 import threading
-
+from Tkinter import *
 class Conexion():
 
     def __init__(self, gui):
@@ -24,6 +24,10 @@ class Conexion():
         self.direccion = 0
         self.cantidadRegistros = 0
         self.trama = ''
+        self.datosBinario = []
+        self.datosHexadecimal = []
+        self.datosDecimal = []
+        self.datosConvertir=[]
 
     def conexion_puerto(self, puerto, baudrate, timeout, intentos, funcion, dispositivo, direccion, cantidadRegistros):
         self.puerto = puerto
@@ -90,6 +94,7 @@ class Conexion():
                         tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos, registrosRestantes)
                         self.comunicacionPuerto(tramaEnviar)
                         time.sleep(2)
+            break
 
     def obtenerTrama(self, dispositivo, funcion, direccion, registros):
         intDispo = int(dispositivo)
@@ -160,12 +165,49 @@ class Conexion():
         self.imprimir_trama_recibida(mensaje)
         print("\n")
         datosConvertir = mensaje[6:mensaje.__len__() - 4]
-        i = 0
-        print("Valores obtenidos: ")
+        # i = 0
+        # print("Valores obtenidos: ")
+        # while (i < datosConvertir.__len__()):
+        #     conversion = int(datosConvertir[i:i + 4], 16)
+        #     print("\tVariable decimal: %d" % conversion)
+        #     print("\tVariable hexadecimal: %r" % hex(conversion))
+        #     print("\tVariable binario: %r" % bin(conversion))
+        #     print("\n")
+        #     i = i + 4
+        self.obtenerBinario(datosConvertir)
+        self.obtenerHexadecimal(datosConvertir)
+        self.obtenerDecimal(datosConvertir)
+
+    def obtenerBinario(self,datosConvertir):
+        i=0
         while (i < datosConvertir.__len__()):
             conversion = int(datosConvertir[i:i + 4], 16)
-            print("\tVariable decimal: %d" % conversion)
-            print("\tVariable hexadecimal: %r" % hex(conversion))
-            print("\tVariable binario: %r" % bin(conversion))
-            print("\n")
+            self.datosBinario.append(bin(conversion))
+            #self.datosBinario[i]=bin(conversion)
             i = i + 4
+        #self.imprimirRespuesta(self.datosBinario)
+
+    def obtenerHexadecimal(self,datosConvertir):
+        i=0
+        while (i < datosConvertir.__len__()):
+            conversion = int(datosConvertir[i:i + 4], 16)
+            self.datosHexadecimal.append(hex(conversion))
+            #self.datosBinario[i]=bin(conversion)
+            i = i + 4
+        #self.imprimirRespuesta(self.datosHexadecimal)
+
+    def obtenerDecimal(self,datosConvertir):
+        i = 0
+        while (i < datosConvertir.__len__()):
+            conversion = int(datosConvertir[i:i + 4], 16)
+            self.datosDecimal.append(conversion)
+            i = i + 4
+
+
+    def imprimirRespuesta(self,datos):
+
+        self.gui.Scrolledlistbox3.delete(0, END)
+        for i in datos:
+            self.gui.Scrolledlistbox3.insert(1, i)
+
+

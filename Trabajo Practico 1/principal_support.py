@@ -28,7 +28,7 @@ def conectar():
     print('principal_support.conectar')
     conectado = conexion.conexion_puerto(puerto=w.puertoEntry.get(), baudrate=w.baudiosEntry.get(),
                                          timeout=w.timeoutEntry.get(),
-                                         intentos=w.intentosEntry.get(), funcion=03,
+                                         intentos=w.intentosEntry.get(), funcion=w.funcionCombo.get(),
                                          dispositivo=w.dispositivoEntry.get(),
                                          direccion=w.direccionEntry.get(), cantidadRegistros=w.variablesEntry.get())
 
@@ -37,19 +37,22 @@ def conectar():
         conexion.obtenerRespuestas()
     else:
         w.estadoLabel.config(text='Error al conectar')
-
+    w.conectarBtn.withdraw();
     sys.stdout.flush()
 
 def convertirBinario():
     print('principal_support.convertirBinario')
+    conexion.imprimirRespuesta(conexion.datosBinario)
     sys.stdout.flush()
 
 def convertirDecimal():
     print('principal_support.convertirDecimal')
+    conexion.imprimirRespuesta(conexion.datosDecimal)
     sys.stdout.flush()
 
 def convertirHexadecimal():
     print('principal_support.convertirHexadecimal')
+    conexion.imprimirRespuesta(conexion.datosHexadecimal)
     sys.stdout.flush()
 
 def desconectar():
