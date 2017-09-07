@@ -322,7 +322,7 @@ proc vTclWindow.top37 {base} {
         -in $top -x 170 -y 10 -width 250 -height 27 -anchor nw \
         -bordermode ignore 
     place $top.ent39 \
-        -in $top -x 170 -y 40 -width 250 -height 27 -anchor nw \
+        -in $top -x 170 -y 45 -width 250 -height 27 -anchor nw \
         -bordermode ignore 
     place $top.lab41 \
         -in $top -x 40 -y 10 -width 130 -relwidth 0 -height 30 -relheight 0 \
@@ -361,7 +361,7 @@ proc vTclWindow.top37 {base} {
         -in $top -x 630 -y 100 -width 250 -height 27 -anchor nw \
         -bordermode inside 
     place $top.cpd54 \
-        -in $top -x 630 -y 40 -width 250 -relwidth 0 -height 27 -relheight 0 \
+        -in $top -x 630 -y 45 -width 250 -relwidth 0 -height 27 -relheight 0 \
         -anchor nw -bordermode inside 
     place $top.tCo56 \
         -in $top -x 170 -y 100 -width 250 -relwidth 0 -height 27 -relheight 0 \

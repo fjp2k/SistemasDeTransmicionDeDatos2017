@@ -23,13 +23,18 @@ class Conexion():
         self.dispositivo = 0
         self.direccion = 0
         self.cantidadRegistros = 0
+        self.variable1=0
+        self.variable2 = 0
+        self.variable3 = 0
+        self.variable4 = 0
+
         self.trama = ''
         self.datosBinario = []
         self.datosHexadecimal = []
         self.datosDecimal = []
         self.datosConvertir=[]
 
-    def conexion_puerto(self, puerto, baudrate, timeout, intentos, funcion, dispositivo, direccion, cantidadRegistros):
+    def conexion_puerto_funcion03(self, puerto, baudrate, timeout, intentos, funcion, dispositivo, direccion, cantidadRegistros):
         self.puerto = puerto
         self.baudrate = int(baudrate)
         self.timeout = int(timeout)
@@ -38,6 +43,58 @@ class Conexion():
         self.dispositivo = int(dispositivo)
         self.direccion = int(direccion)
         self.cantidadRegistros = int(cantidadRegistros)
+
+        self.ser.port = self.puerto
+        self.ser.baudrate = self.baudrate
+        self.ser.timeout = self.timeout
+        self.ser.open()
+        if (self.ser.is_open):
+            return True
+        else:
+            return False
+
+    def conexion_puerto_funcion06(self,puerto,baudrate,timeout,intentos,dispositivo,funcion,direccion,variable):
+        self.puerto = puerto
+        self.baudrate = int(baudrate)
+        self.timeout = int(timeout)
+        self.intentos=int(intentos)
+        self.dispositivo = int(dispositivo)
+        self.funcion = int(funcion)
+        self.direccion = int(direccion)
+        self.variable1 = int(variable)
+
+        self.ser.port = self.puerto
+        self.ser.baudrate = self.baudrate
+        self.ser.timeout = self.timeout
+        self.ser.open()
+        if (self.ser.is_open):
+            return True
+        else:
+            return False
+
+    def conexion_puerto_funcion16(self, puerto, baudrate, timeout, intentos,registros,dispositivo, funcion, direccion,variable1,variable2,variable3=0,variable4=0):
+        self.puerto = puerto
+        self.baudrate = int(baudrate)
+        self.timeout = int(timeout)
+        self.intentos = int(intentos)
+        self.cantidadRegistros = int(registros)
+        self.funcion = int(funcion)
+        self.dispositivo = int(dispositivo)
+        self.direccion = int(direccion)
+
+        if(self.cantidadRegistros==2):
+            self.variable1=('%.4x'%int(variable1))
+            self.variable2 = ('%.4x'%int(variable2))
+        if (self.cantidadRegistros == 3):
+            self.variable1 = ('%.4x' % int(variable1))
+            self.variable2 = ('%.4x' % int(variable2))
+            self.variable3 = ('%.4x' % int(variable3))
+        if (self.cantidadRegistros == 4):
+            self.variable1 = ('%.4x' % int(variable1))
+            self.variable2 = ('%.4x' % int(variable2))
+            self.variable3 = ('%.4x' % int(variable3))
+            self.variable4 = ('%.4x' % int(variable4))
+
 
         self.ser.port = self.puerto
         self.ser.baudrate = self.baudrate
@@ -60,16 +117,16 @@ class Conexion():
 
         self.gui.Scrolledlistbox2.insert(1, trama)
 
-    def obtenerRespuestas(self):
-        t1 = threading.Thread(target=self.obtenerRespuestas_thread)
+    def obtenerRespuestas_funcion03(self):
+        t1 = threading.Thread(target=self.obtenerRespuestas_funcion03_thread)
         t1.start()
 
-    def obtenerRespuestas_thread(self):
+    def obtenerRespuestas_funcion03_thread(self):
         while (self.intentos > 0):
             if (self.cantidadRegistros <= 125):
                 print("Iteraciones: 1")
                 tramaEnvio = self.obtenerTrama(self.dispositivo, self.funcion, self.direccion, self.cantidadRegistros)
-                self.comunicacionPuerto(tramaEnvio)
+                self.comunicacionPuerto_funcion03(tramaEnvio)
                 time.sleep(10)
             else:
                 totalPedidos = self.cantidadRegistros * 2
@@ -83,17 +140,36 @@ class Conexion():
                     print("Iteracion: %d" % i)
                     if (i != iteraciones):
                         i += 1
-
                         tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos, registros)
-
-                        self.comunicacionPuerto(tramaEnviar)
+                        self.comunicacionPuerto_funcion03(tramaEnviar)
                         registrosRecorridos += 125
                         time.sleep(2)
                     else:
                         registrosRestantes = self.cantidadRegistros - registrosRecorridos
                         tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos, registrosRestantes)
-                        self.comunicacionPuerto(tramaEnviar)
+                        self.comunicacionPuerto_funcion03(tramaEnviar)
+                        i+=1
                         time.sleep(2)
+            break
+
+    def obtenerRespuestas_funcion06(self):
+        t1 = threading.Thread(target=self.obtenerRespuestas_funcion06_thread)
+        t1.start()
+
+    def obtenerRespuestas_funcion06_thread(self):
+        while(self.intentos>0):
+            tramaEnvio = self.obtenerTrama(self.dispositivo, self.funcion, self.direccion, self.variable1)
+            self.comunicacionPuerto_funcion06(tramaEnvio)
+            break
+
+    def obtenerRespuestas_funcion16(self):
+        t1 = threading.Thread(target=self.obtenerRespuestas_funcion16_thread)
+        t1.start()
+
+    def obtenerRespuestas_funcion16_thread(self):
+        while (self.intentos > 0):
+            tramaEnvio = self.obtenerTrama(self.dispositivo, self.funcion, self.direccion, self.cantidadRegistros)
+            self.comunicacionPuerto_funcion16(tramaEnvio)
             break
 
     def obtenerTrama(self, dispositivo, funcion, direccion, registros):
@@ -107,6 +183,15 @@ class Conexion():
         num_of_reg = ('%.4x' % intReg)
 
         read_device = device + function_code + start_at_reg + num_of_reg
+        if(self.funcion==16):
+            intBytes = int(registros * 2)
+            numBytes = ('%.2x' % intBytes)
+            if(registros==2):
+                read_device = device + function_code + start_at_reg + num_of_reg + numBytes + self.variable1 + self.variable2
+            if(registros==3):
+                read_device = device + function_code + start_at_reg + num_of_reg + numBytes + self.variable1 + self.variable2 +self.variable3
+            if(registros==4):
+                read_device = device + function_code + start_at_reg + num_of_reg + numBytes + self.variable1 + self.variable2 +self.variable3 +self.variable4
         crc = self.calc(read_device)
         return (read_device + crc)
 
@@ -153,7 +238,7 @@ class Conexion():
             crc = "0" + crc
         return crc[2:] + crc[:2]
 
-    def comunicacionPuerto(self, trama):
+    def comunicacionPuerto_funcion03(self, trama):
         self.trama = trama
         print("Trama Solicitud: %s" % self.trama)
         self.imprimir_trama_enviada(self.trama)
@@ -165,15 +250,33 @@ class Conexion():
         self.imprimir_trama_recibida(mensaje)
         print("\n")
         datosConvertir = mensaje[6:mensaje.__len__() - 4]
-        # i = 0
-        # print("Valores obtenidos: ")
-        # while (i < datosConvertir.__len__()):
-        #     conversion = int(datosConvertir[i:i + 4], 16)
-        #     print("\tVariable decimal: %d" % conversion)
-        #     print("\tVariable hexadecimal: %r" % hex(conversion))
-        #     print("\tVariable binario: %r" % bin(conversion))
-        #     print("\n")
-        #     i = i + 4
+        self.obtenerBinario(datosConvertir)
+        self.obtenerHexadecimal(datosConvertir)
+        self.obtenerDecimal(datosConvertir)
+
+    def comunicacionPuerto_funcion06(self,trama):
+        print("\tTrama enviada: %s" % trama)
+        self.imprimir_trama_enviada(trama)
+        resultado = self.ser.write(binascii.unhexlify(trama))
+        devolucion = binascii.hexlify(self.ser.read(resultado))
+        print("\tTrama devuelta: %s" % devolucion)
+        self.imprimir_trama_recibida(devolucion)
+
+        datosConvertir = devolucion[8:devolucion.__len__() - 4]
+        self.obtenerBinario(datosConvertir)
+        self.obtenerHexadecimal(datosConvertir)
+        self.obtenerDecimal(datosConvertir)
+
+    def comunicacionPuerto_funcion16(self,trama):
+
+        print("\tTrama enviada: %s" % trama)
+        self.imprimir_trama_enviada(trama)
+        resultado = self.ser.write(binascii.unhexlify(trama))
+        devolucion = binascii.hexlify(self.ser.read(8))
+        print("\tTrama devuelta: %s" % devolucion)
+        self.imprimir_trama_recibida(devolucion)
+
+        datosConvertir = trama[14:trama.__len__() - 4]
         self.obtenerBinario(datosConvertir)
         self.obtenerHexadecimal(datosConvertir)
         self.obtenerDecimal(datosConvertir)
@@ -183,18 +286,14 @@ class Conexion():
         while (i < datosConvertir.__len__()):
             conversion = int(datosConvertir[i:i + 4], 16)
             self.datosBinario.append(bin(conversion))
-            #self.datosBinario[i]=bin(conversion)
             i = i + 4
-        #self.imprimirRespuesta(self.datosBinario)
 
     def obtenerHexadecimal(self,datosConvertir):
         i=0
         while (i < datosConvertir.__len__()):
             conversion = int(datosConvertir[i:i + 4], 16)
             self.datosHexadecimal.append(hex(conversion))
-            #self.datosBinario[i]=bin(conversion)
             i = i + 4
-        #self.imprimirRespuesta(self.datosHexadecimal)
 
     def obtenerDecimal(self,datosConvertir):
         i = 0
@@ -203,11 +302,13 @@ class Conexion():
             self.datosDecimal.append(conversion)
             i = i + 4
 
-
     def imprimirRespuesta(self,datos):
 
         self.gui.Scrolledlistbox3.delete(0, END)
+        j=1
         for i in datos:
-            self.gui.Scrolledlistbox3.insert(1, i)
+            self.gui.Scrolledlistbox3.insert(j,i)
+            j+=1
+
 
 

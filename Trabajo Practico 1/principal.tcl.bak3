@@ -66,7 +66,7 @@ proc vTclWindow.top37 {base} {
         -menu "$top.m38" -background {#d9d9d9} -highlightbackground {#d9d9d9} \
         -highlightcolor black 
     wm focusmodel $top passive
-    wm geometry $top 1000x650+186+1
+    wm geometry $top 1000x590+187+101
     update
     # set in toplevel.wgt.
     global vTcl
@@ -78,6 +78,9 @@ proc vTclWindow.top37 {base} {
     wm deiconify $top
     wm title $top "Trabajo Practico 1"
     vTcl:DefineAlias "$top" "Toplevel1" vTcl:Toplevel:WidgetProc "" 1
+    ttk::style configure Entry -background #d9d9d9
+    ttk::style configure Entry -foreground #000000
+    ttk::style configure Entry -font TkDefaultFont
     entry $top.ent38 \
         -background white -disabledforeground {#a3a3a3} -font TkFixedFont \
         -foreground {#000000} -highlightbackground {#d9d9d9} \
@@ -379,16 +382,16 @@ proc vTclWindow.top37 {base} {
         -in $top -x 610 -y 250 -width 330 -relwidth 0 -height 148 \
         -relheight 0 -anchor nw -bordermode inside 
     place $top.cpd62 \
-        -in $top -x 250 -y 450 -width 680 -relwidth 0 -height 188 \
+        -in $top -x 270 -y 450 -width 680 -relwidth 0 -height 188 \
         -relheight 0 -anchor nw -bordermode inside 
     place $top.but63 \
         -in $top -x 60 -y 460 -width 120 -relwidth 0 -height 40 -relheight 0 \
         -anchor nw -bordermode ignore 
     place $top.but64 \
-        -in $top -x 60 -y 510 -width 120 -relwidth 0 -height 40 -relheight 0 \
+        -in $top -x 60 -y 520 -width 120 -relwidth 0 -height 40 -relheight 0 \
         -anchor nw -bordermode ignore 
     place $top.but65 \
-        -in $top -x 60 -y 560 -width 120 -relwidth 0 -height 40 -relheight 0 \
+        -in $top -x 60 -y 580 -width 120 -relwidth 0 -height 40 -relheight 0 \
         -anchor nw -bordermode ignore 
     place $top.lab66 \
         -in $top -x 310 -y 220 -width 200 -anchor nw -bordermode ignore 
