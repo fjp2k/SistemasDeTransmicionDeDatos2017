@@ -12,7 +12,7 @@ timeout=0.00000000001
 dispositivo = 01
 funcion = 03
 direccion = 0001
-cantidadRegistros=129
+cantidadRegistros=2
 ser = serial.Serial()
 
 #procedimientos
@@ -84,6 +84,7 @@ def comunicacionPuerto(trama):
     global ser
     ser.write(binascii.unhexlify(trama))
     mensaje=binascii.hexlify(ser.read(5+cantidadRegistros*2))
+
     print("Trama devuelta: %s" % mensaje)
     print("\n")
     datosConvertir = mensaje[6:mensaje.__len__() - 4]

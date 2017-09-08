@@ -26,43 +26,28 @@ def set_Tk_var():
 
 def conectar():
     print('principal_support.conectar')
-    funcion=w.funcionCombo.get()
 
-    if(funcion=="3"):
-        conectado = conexion.conexion_puerto_funcion03(puerto=w.puertoEntry.get(), baudrate=w.baudiosEntry.get(),
-                                         timeout=w.timeoutEntry.get(),
-                                         intentos=w.intentosEntry.get(), funcion=funcion,
-                                         dispositivo=w.dispositivoEntry.get(),
-                                         direccion=w.direccionEntry.get(), cantidadRegistros=w.variablesEntry.get())
-        if (conectado):
-            w.estadoLabel.config(text='Conectado')
-            conexion.obtenerRespuestas_funcion03()
-        else:
-            w.estadoLabel.config(text='Error al conectar')
+    conectado = conexion.conexion_puerto(puerto=w.puertoEntry.get(), baudrate=w.baudiosEntry.get(),
+                                         timeout=w.timeoutEntry.get())
+    if (conectado):
+        funcion = w.funcionCombo.get()
+        w.estadoLabel.config(text='Conectado')
+        if(funcion=="3"):
+            conexion.ejecutar_funcion03(intentos=w.intentosEntry.get(),
+                                        dispositivo=w.dispositivoEntry.get(),
+                                        direccion=w.direccionEntry.get(), cantidadRegistros=w.variablesEntry.get())
+        if(funcion=="6"):
+            conexion.ejecutar_funcion06(intentos=w.intentosEntry.get(),dispositivo=w.dispositivoEntry.get(),
+                                        direccion=w.direccionEntry.get(),variable=w.EntryVariable1.get())
 
-    if(funcion=="6"):
-        conectado=conexion.conexion_puerto_funcion06(puerto=w.puertoEntry.get(),baudrate=w.baudiosEntry.get(),timeout=w.timeoutEntry.get(),
-                                                     intentos=w.intentosEntry.get(),dispositivo=w.dispositivoEntry.get(),funcion=funcion,
-                                                     direccion=w.direccionEntry.get(),variable=w.EntryVariable1.get())
-        if (conectado):
-            w.estadoLabel.config(text='Conectado')
-            conexion.obtenerRespuestas_funcion06()
-        else:
-            w.estadoLabel.config(text='Error al conectar')
+        if(funcion=="16"):
+            conexion.ejecutar_funcion16(intentos=w.intentosEntry.get(),registros=w.variablesEntry.get(),dispositivo=w.dispositivoEntry.get(),
+                                        direccion=w.direccionEntry.get(),variable1=w.EntryVariable1.get(),
+                                        variable2=w.EntryVariable2.get(),variable3=w.EntryVariable3.get(),variable4=w.EntryVariable4.get())
 
-    if(funcion=="16"):
-        conectado = conexion.conexion_puerto_funcion16(puerto=w.puertoEntry.get(), baudrate=w.baudiosEntry.get(),
-                                                           timeout=w.timeoutEntry.get(),intentos=w.intentosEntry.get(),
-                                                           registros=w.variablesEntry.get(),dispositivo=w.dispositivoEntry.get(),
-                                                           funcion=funcion,direccion=w.direccionEntry.get(),
-                                                           variable1=w.EntryVariable1.get(),variable2=w.EntryVariable2.get(),
-                                                           variable3=w.EntryVariable3.get(),variable4=w.EntryVariable4.get())
-        print(conectado)
-        if (conectado):
-            w.estadoLabel.config(text='Conectado')
-            conexion.obtenerRespuestas_funcion16()
-        else:
-            w.estadoLabel.config(text='Error al conectar')
+    else:
+        w.estadoLabel.config(text='Error al conectar')
+
     sys.stdout.flush()
 
 def convertirBinario():
