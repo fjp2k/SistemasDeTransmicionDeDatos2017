@@ -5,6 +5,8 @@ import math
 import principal_support
 import threading
 from Tkinter import *
+from errorController import *
+
 class Conexion():
 
     def __init__(self, gui):
@@ -34,6 +36,7 @@ class Conexion():
         self.datosHexadecimal = []
         self.datosDecimal = []
         self.datosConvertir=[]
+        self.descripcionError=""
 
     def conexion_puerto(self,puerto,baudrate,timeout):
         self.puerto = puerto
@@ -68,7 +71,7 @@ class Conexion():
                 print("Iteraciones: 1")
                 tramaEnvio = self.obtenerTrama(self.dispositivo, self.funcion, self.direccion, self.cantidadRegistros)
                 exitoComunicacion=self.comunicacionPuerto(tramaEnvio)
-                print(exitoComunicacion)
+                print("exito: %s"%exitoComunicacion)
                 if(exitoComunicacion):
                     print("Trama Solicitud: %s" % self.trama)
                     self.imprimir_trama_enviada(self.trama)
@@ -77,11 +80,14 @@ class Conexion():
                     self.obtenerBinario(self.datosConvertir)
                     self.obtenerHexadecimal(self.datosConvertir)
                     self.obtenerDecimal(self.datosConvertir)
+                    break
                 else:
                     self.intentos-=1
                     print("intentos restantes: %d"%self.intentos)
                     if(self.intentos==0):
                         print("se acabaron los intentos")
+                        self.gui.Scrolledlistbox2.insert(1,"No hay mas intentos disponibles")
+                        self.gui.Scrolledlistbox2.insert(2,self.descripcionError)
                         break
                 #time.sleep(10)
             else:
@@ -102,8 +108,7 @@ class Conexion():
                         time.sleep(2)
                     else:
                         registrosRestantes = self.cantidadRegistros - registrosRecorridos
-                        tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos,
-                                                        registrosRestantes)
+                        tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos,registrosRestantes)
                         self.comunicacionPuerto(tramaEnviar)
                         i += 1
                         time.sleep(2)
@@ -179,8 +184,26 @@ class Conexion():
     def obtenerRespuestas_funcion06_thread(self):
         while(self.intentos>0):
             tramaEnvio = self.obtenerTrama(self.dispositivo, self.funcion, self.direccion, self.variable1)
-            self.comunicacionPuerto(tramaEnvio)
-            break
+            exitoComunicacion=self.comunicacionPuerto(tramaEnvio)
+
+            if (exitoComunicacion):
+                print("Trama Solicitud: %s" % self.trama)
+                self.imprimir_trama_enviada(self.trama)
+                print("Trama devuelta: %s" % self.devolucion)
+                self.imprimir_trama_recibida(self.devolucion)
+                self.obtenerBinario(self.datosConvertir)
+                self.obtenerHexadecimal(self.datosConvertir)
+                self.obtenerDecimal(self.datosConvertir)
+                break
+            else:
+                self.intentos -= 1
+                print("intentos restantes: %d" % self.intentos)
+                if (self.intentos == 0):
+                    print("se acabaron los intentos")
+                    self.gui.Scrolledlistbox2.insert(1, "No hay mas intentos disponibles")
+                    self.gui.Scrolledlistbox2.insert(2, self.descripcionError)
+                    break
+
 
     def obtenerRespuestas_funcion16(self):
         t1 = threading.Thread(target=self.obtenerRespuestas_funcion16_thread)
@@ -189,8 +212,25 @@ class Conexion():
     def obtenerRespuestas_funcion16_thread(self):
         while (self.intentos > 0):
             tramaEnvio = self.obtenerTrama(self.dispositivo, self.funcion, self.direccion, self.cantidadRegistros)
-            self.comunicacionPuerto(tramaEnvio)
-            break
+            exitoComunicacion=self.comunicacionPuerto(tramaEnvio)
+            if (exitoComunicacion):
+                print("Trama Solicitud: %s" % self.trama)
+                self.imprimir_trama_enviada(self.trama)
+                print("Trama devuelta: %s" % self.devolucion)
+                self.imprimir_trama_recibida(self.devolucion)
+                self.obtenerBinario(self.datosConvertir)
+                self.obtenerHexadecimal(self.datosConvertir)
+                self.obtenerDecimal(self.datosConvertir)
+                break
+            else:
+                self.intentos -= 1
+                print("intentos restantes: %d" % self.intentos)
+                if (self.intentos == 0):
+                    print("se acabaron los intentos")
+                    self.gui.Scrolledlistbox2.insert(1, "No hay mas intentos disponibles")
+                    self.gui.Scrolledlistbox2.insert(2, self.descripcionError)
+                    break
+
 
     def obtenerTrama(self, dispositivo, funcion, direccion, registros):
         intDispo = int(dispositivo)
@@ -262,30 +302,57 @@ class Conexion():
         self.trama = trama
         resultado=self.ser.write(binascii.unhexlify(self.trama))
         if(self.funcion==3):
-            cantidadBytes=5+self.cantidadRegistros*2
-            self.devolucion = binascii.hexlify(self.ser.read(cantidadBytes))
-            print(cantidadBytes)
-            print(self.devolucion.__len__()/2)
-            if(cantidadBytes==self.devolucion.__len__()/2):
-                igualdad=self.verficarCrc(self.devolucion)
-                print(igualdad)
-                if(igualdad):
-                    self.datosConvertir = self.devolucion[6:self.devolucion.__len__() - 4]
-                    print("todo ok")
+            self.devolucion = binascii.hexlify(self.ser.read(5+self.cantidadRegistros*2))
+            llamadaExitosa=self.verificarTrama(self.devolucion)
+            if(llamadaExitosa==False):
+                return False
+            else:
+                llamadaExitosa=controlar_trama(self.devolucion)
+                if(llamadaExitosa):
                     return True
                 else:
-                    print("Error crc distintos")
+                    self.descripcionError=obtener_error(self.devolucion)
                     return False
-            else:
-                return False
+
+
         if(self.funcion==6):
-            devolucion = binascii.hexlify(self.ser.read(resultado))
-            datosConvertir = devolucion[8:devolucion.__len__() - 4]
+            self.devolucion = binascii.hexlify(self.ser.read(resultado))
+            llamadaExitosa = self.verificarTrama(self.devolucion)
+            if (llamadaExitosa == False):
+                return False
+            else:
+                llamadaExitosa = controlar_trama(self.devolucion)
+                if (llamadaExitosa):
+                    return True
+                else:
+                    print("estamos aca")
+                    self.descripcionError = obtener_error(self.devolucion)
+                    return False
 
         if(self.funcion==16):
-            devolucion = binascii.hexlify(self.ser.read(8))
-            datosConvertir = trama[14:trama.__len__() - 4]
+            self.devolucion = binascii.hexlify(self.ser.read(8))
+            llamadaExitosa = self.verificarTrama(self.devolucion)
+            if (llamadaExitosa == False):
+                return False
+            else:
+                llamadaExitosa = controlar_trama(self.devolucion)
+                if (llamadaExitosa):
+                    return True
+                else:
+                    self.descripcionError = obtener_error(self.devolucion)
+                    return False
 
+    def verificarTrama(self,devolucion):
+
+        igualdad = self.verficarCrc(devolucion)
+        print(igualdad)
+        if (igualdad):
+                self.datosConvertir = devolucion[6:devolucion.__len__() - 4]
+                print("todo ok")
+                return True
+        else:
+                print("Error crc distintos")
+                return False
 
 
     def verficarCrc(self,devolucion):
