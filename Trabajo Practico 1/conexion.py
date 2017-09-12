@@ -5,6 +5,8 @@ import math
 import principal_support
 import threading
 from Tkinter import *
+from errorController import *
+
 class Conexion():
 
     def __init__(self, gui):
@@ -29,16 +31,18 @@ class Conexion():
         self.variable4 = 0
 
         self.trama = ''
+        self.devolucion=""
         self.datosBinario = []
         self.datosHexadecimal = []
         self.datosDecimal = []
         self.datosConvertir=[]
+        self.descripcionError=""
 
 
     def conexion_puerto(self,puerto,baudrate,timeout):
         self.puerto = puerto
         self.baudrate = int(baudrate)
-        self.timeout = int(timeout)
+        self.timeout = float(timeout)
 
         try:
             self.ser.port = self.puerto
@@ -70,8 +74,26 @@ class Conexion():
             if (self.cantidadRegistros <= 125):
                 print("Iteraciones: 1")
                 tramaEnvio = self.obtenerTrama(self.dispositivo, self.funcion, self.direccion, self.cantidadRegistros)
-                self.comunicacionPuerto(tramaEnvio)
-                time.sleep(10)
+                exitoComunicacion=self.comunicacionPuerto(tramaEnvio)
+                print("exito: %s"%exitoComunicacion)
+                if(exitoComunicacion):
+                    print("Trama Solicitud: %s" % self.trama)
+                    self.imprimir_trama_enviada(self.trama)
+                    print("Trama devuelta: %s" % self.devolucion)
+                    self.imprimir_trama_recibida(self.devolucion)
+                    self.obtenerBinario(self.datosConvertir)
+                    self.obtenerHexadecimal(self.datosConvertir)
+                    self.obtenerDecimal(self.datosConvertir)
+                    break
+                else:
+                    self.intentos-=1
+                    print("intentos restantes: %d"%self.intentos)
+                    if(self.intentos==0):
+                        print("se acabaron los intentos")
+                        self.gui.Scrolledlistbox2.insert(1,"No hay mas intentos disponibles")
+                        self.gui.Scrolledlistbox2.insert(2,self.descripcionError)
+                        break
+                #time.sleep(10)
             else:
                 totalPedidos = self.cantidadRegistros * 2
                 totalBytes = totalPedidos / float(250)
@@ -90,12 +112,11 @@ class Conexion():
                         time.sleep(2)
                     else:
                         registrosRestantes = self.cantidadRegistros - registrosRecorridos
-                        tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos,
-                                                        registrosRestantes)
+                        tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos,registrosRestantes)
                         self.comunicacionPuerto(tramaEnviar)
                         i += 1
                         time.sleep(2)
-            break
+
 
     def ejecutar_funcion06(self,intentos,dispositivo,direccion,variable):
         self.intentos = int(intentos)
@@ -167,8 +188,26 @@ class Conexion():
     def obtenerRespuestas_funcion06_thread(self):
         while(self.intentos>0):
             tramaEnvio = self.obtenerTrama(self.dispositivo, self.funcion, self.direccion, self.variable1)
-            self.comunicacionPuerto(tramaEnvio)
-            break
+            exitoComunicacion=self.comunicacionPuerto(tramaEnvio)
+
+            if (exitoComunicacion):
+                print("Trama Solicitud: %s" % self.trama)
+                self.imprimir_trama_enviada(self.trama)
+                print("Trama devuelta: %s" % self.devolucion)
+                self.imprimir_trama_recibida(self.devolucion)
+                self.obtenerBinario(self.datosConvertir)
+                self.obtenerHexadecimal(self.datosConvertir)
+                self.obtenerDecimal(self.datosConvertir)
+                break
+            else:
+                self.intentos -= 1
+                print("intentos restantes: %d" % self.intentos)
+                if (self.intentos == 0):
+                    print("se acabaron los intentos")
+                    self.gui.Scrolledlistbox2.insert(1, "No hay mas intentos disponibles")
+                    self.gui.Scrolledlistbox2.insert(2, self.descripcionError)
+                    break
+
 
     def obtenerRespuestas_funcion16(self):
         t1 = threading.Thread(target=self.obtenerRespuestas_funcion16_thread)
@@ -177,8 +216,25 @@ class Conexion():
     def obtenerRespuestas_funcion16_thread(self):
         while (self.intentos > 0):
             tramaEnvio = self.obtenerTrama(self.dispositivo, self.funcion, self.direccion, self.cantidadRegistros)
-            self.comunicacionPuerto(tramaEnvio)
-            break
+            exitoComunicacion=self.comunicacionPuerto(tramaEnvio)
+            if (exitoComunicacion):
+                print("Trama Solicitud: %s" % self.trama)
+                self.imprimir_trama_enviada(self.trama)
+                print("Trama devuelta: %s" % self.devolucion)
+                self.imprimir_trama_recibida(self.devolucion)
+                self.obtenerBinario(self.datosConvertir)
+                self.obtenerHexadecimal(self.datosConvertir)
+                self.obtenerDecimal(self.datosConvertir)
+                break
+            else:
+                self.intentos -= 1
+                print("intentos restantes: %d" % self.intentos)
+                if (self.intentos == 0):
+                    print("se acabaron los intentos")
+                    self.gui.Scrolledlistbox2.insert(1, "No hay mas intentos disponibles")
+                    self.gui.Scrolledlistbox2.insert(2, self.descripcionError)
+                    break
+
 
     def obtenerTrama(self, dispositivo, funcion, direccion, registros):
         intDispo = int(dispositivo)
@@ -250,26 +306,69 @@ class Conexion():
         self.trama = trama
         resultado=self.ser.write(binascii.unhexlify(self.trama))
         if(self.funcion==3):
-            cantidadBytes=5+self.cantidadRegistros*2
-            devolucion = binascii.hexlify(self.ser.read(5 + self.cantidadRegistros * 2))
-            #self.com
+            self.devolucion = binascii.hexlify(self.ser.read(5+self.cantidadRegistros*2))
+            llamadaExitosa=self.verificarTrama(self.devolucion)
+            if(llamadaExitosa==False):
+                return False
+            else:
+                llamadaExitosa=controlar_trama(self.devolucion)
+                if(llamadaExitosa):
+                    return True
+                else:
+                    self.descripcionError=obtener_error(self.devolucion)
+                    return False
 
-            datosConvertir = devolucion[6:devolucion.__len__() - 4]
+
         if(self.funcion==6):
-            devolucion = binascii.hexlify(self.ser.read(resultado))
-            datosConvertir = devolucion[8:devolucion.__len__() - 4]
+            self.devolucion = binascii.hexlify(self.ser.read(resultado))
+            llamadaExitosa = self.verificarTrama(self.devolucion)
+            if (llamadaExitosa == False):
+                return False
+            else:
+                llamadaExitosa = controlar_trama(self.devolucion)
+                if (llamadaExitosa):
+                    return True
+                else:
+                    print("estamos aca")
+                    self.descripcionError = obtener_error(self.devolucion)
+                    return False
 
         if(self.funcion==16):
-            devolucion = binascii.hexlify(self.ser.read(8))
-            datosConvertir = trama[14:trama.__len__() - 4]
+            self.devolucion = binascii.hexlify(self.ser.read(8))
+            llamadaExitosa = self.verificarTrama(self.devolucion)
+            if (llamadaExitosa == False):
+                return False
+            else:
+                llamadaExitosa = controlar_trama(self.devolucion)
+                if (llamadaExitosa):
+                    return True
+                else:
+                    self.descripcionError = obtener_error(self.devolucion)
+                    return False
 
-        print("Trama Solicitud: %s" % self.trama)
-        self.imprimir_trama_enviada(self.trama)
-        print("Trama devuelta: %s" % devolucion)
-        self.imprimir_trama_recibida(devolucion)
-        self.obtenerBinario(datosConvertir)
-        self.obtenerHexadecimal(datosConvertir)
-        self.obtenerDecimal(datosConvertir)
+    def verificarTrama(self,devolucion):
+
+        igualdad = self.verficarCrc(devolucion)
+        print(igualdad)
+        if (igualdad):
+                self.datosConvertir = devolucion[6:devolucion.__len__() - 4]
+                print("todo ok")
+                return True
+        else:
+                print("Error crc distintos")
+                return False
+
+
+    def verficarCrc(self,devolucion):
+        crc1=devolucion[devolucion.__len__()-4:devolucion.__len__()]
+        sinCrc=devolucion[0:devolucion.__len__()-4]
+        crc2=self.calc(sinCrc)
+        print(crc1)
+        print(crc2)
+        if(crc1==crc2):
+            return True
+        else:
+            return False
 
     """def comunicacionPuerto_funcion03(self, trama):
         self.trama = trama
