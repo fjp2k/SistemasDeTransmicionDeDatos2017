@@ -34,18 +34,22 @@ class Conexion():
         self.datosDecimal = []
         self.datosConvertir=[]
 
+
     def conexion_puerto(self,puerto,baudrate,timeout):
         self.puerto = puerto
         self.baudrate = int(baudrate)
         self.timeout = int(timeout)
 
-        self.ser.port = self.puerto
-        self.ser.baudrate = self.baudrate
-        self.ser.timeout = self.timeout
-        self.ser.open()
-        if (self.ser.is_open):
-            return True
-        else:
+        try:
+            self.ser.port = self.puerto
+            self.ser.baudrate = self.baudrate
+            self.ser.timeout = self.timeout
+            self.ser.open()
+            if (self.ser.is_open):
+                return True
+            else:
+                return False
+        except:
             return False
 
     def ejecutar_funcion03(self,intentos, dispositivo, direccion, cantidadRegistros):

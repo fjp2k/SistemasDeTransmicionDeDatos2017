@@ -27,9 +27,20 @@ def set_Tk_var():
 def conectar():
     print('principal_support.conectar')
 
-    conectado = conexion.conexion_puerto(puerto=w.puertoEntry.get(), baudrate=w.baudiosEntry.get(),
+    w.Scrolledlistbox1.delete(0, END)
+    w.Scrolledlistbox2.delete(0, END)
+    w.Scrolledlistbox3.delete(0, END)
+
+    if (verificar_datos()):
+        conectado = conexion.conexion_puerto(puerto=w.puertoEntry.get(), baudrate=w.baudiosEntry.get(),
                                          timeout=w.timeoutEntry.get())
+    else:
+        conectado = False
+
     if (conectado):
+        w.conectarBtn.config(state=DISABLED)
+        w.desconectarBtn.config(state=NORMAL)
+
         funcion = w.funcionCombo.get()
         w.estadoLabel.config(text='Conectado')
         if(funcion=="3"):
@@ -46,6 +57,8 @@ def conectar():
                                         variable2=w.EntryVariable2.get(),variable3=w.EntryVariable3.get(),variable4=w.EntryVariable4.get())
 
     else:
+        w.conectarBtn.config(state=NORMAL)
+        w.desconectarBtn.config(state=DISABLED)
         w.estadoLabel.config(text='Error al conectar')
 
     sys.stdout.flush()
@@ -69,23 +82,15 @@ def desconectar():
     print('principal_support.desconectar')
     desconectar=conexion.desconectarpuerto()
     if(desconectar):
-        w.puertoEntry.delete(0,END)
-        w.dispositivoEntry.delete(0,END)
-        w.puertoEntry.delete(0, END)
-        w.direccionEntry.delete(0, END)
-        w.funcionCombo.delete(0, END)
-        w.timeoutEntry.delete(0, END)
-        w.intentosEntry.delete(0, END)
-        w.baudiosEntry.delete(0, END)
-        w.variablesEntry.delete(0, END)
-        w.EntryVariable1.delete(0, END)
-        w.EntryVariable2.delete(0, END)
-        w.EntryVariable3.delete(0, END)
-        w.EntryVariable4.delete(0, END)
+        w.conectarBtn.config(state=NORMAL)
+        w.desconectarBtn.config(state=DISABLED)
+
         w.Scrolledlistbox1.delete(0,END)
         w.Scrolledlistbox2.delete(0, END)
         w.Scrolledlistbox3.delete(0, END)
+
         w.estadoLabel.config(text='Desconectado')
+
         conexion.datosDecimal=[]
         conexion.datosHexadecimal=[]
         conexion.datosBinario=[]
@@ -98,6 +103,9 @@ def init(top, gui, *args, **kwargs):
     root = top
     conexion = Conexion(gui=w)
 
+    w.conectarBtn.config(state=NORMAL)
+    w.desconectarBtn.config(state=DISABLED)
+
 def destroy_window():
     # Function which closes the window.
     global top_level
@@ -109,3 +117,49 @@ if __name__ == '__main__':
     principal.vp_start_gui()
 
 
+def verificar_datos():
+
+    index = 1
+    datos_correctos = True
+
+    if (w.puertoEntry.get()==''):
+        datos_correctos = False
+        w.Scrolledlistbox1.insert(index, "Puerto incorrecto")
+        index = index + 1
+
+    if (w.baudiosEntry.get() == '' or not isinstance( int(w.baudiosEntry.get()), ( int, long ) ) ):
+        datos_correctos = False
+        w.Scrolledlistbox1.insert(index, "Baudios incorrectos")
+        index = index + 1
+
+    if (w.timeoutEntry.get() == '' or not isinstance( int(w.timeoutEntry.get()), ( int, long ) ) ):
+        datos_correctos = False
+        w.Scrolledlistbox1.insert(index, "Timeout incorrecto")
+        index = index + 1
+
+    if ( w.intentosEntry.get() == '' or not isinstance( int(w.intentosEntry.get()), ( int, long ) ) ):
+        datos_correctos = False
+        w.Scrolledlistbox1.insert(index, "Cantidad intentos incorrectos")
+        index = index + 1
+
+    if ( w.dispositivoEntry.get() == '' or not isinstance( int(w.dispositivoEntry.get()), ( int, long ) ) ):
+        datos_correctos = False
+        w.Scrolledlistbox1.insert(index, "Numero dispositivo incorrecto")
+        index = index + 1
+
+    if (w.direccionEntry.get() == '' or not isinstance( int(w.direccionEntry.get()), ( int, long ) ) ):
+        datos_correctos = False
+        w.Scrolledlistbox1.insert(index, "Direccion incorrecta")
+        index = index + 1
+
+    if (w.variablesEntry.get() == '' or not isinstance( int(w.variablesEntry.get()), ( int, long ) ) ):
+        datos_correctos = False
+        w.Scrolledlistbox1.insert(index, "Cantidad variables incorrecta")
+        index = index + 1
+
+    if (w.funcionCombo.get() == '' or not (w.funcionCombo.get() == '3' or w.funcionCombo.get() == '6' or w.funcionCombo.get() == '16')):
+        datos_correctos = False
+        w.Scrolledlistbox1.insert(index, "Funcion incorrecta")
+        index = index + 1
+
+    return datos_correctos
