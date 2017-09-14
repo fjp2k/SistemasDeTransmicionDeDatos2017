@@ -70,6 +70,7 @@ class Conexion():
         t1.start()
 
     def obtenerRespuestas_funcion03_thread(self):
+        llamada_exitosa = False
         while (self.intentos > 0):
             if (self.cantidadRegistros <= 125):
                 print("Iteraciones: 1")
@@ -84,6 +85,7 @@ class Conexion():
                     self.obtenerBinario(self.datosConvertir)
                     self.obtenerHexadecimal(self.datosConvertir)
                     self.obtenerDecimal(self.datosConvertir)
+                    llamada_exitosa = True
                     break
                 else:
                     self.intentos-=1
@@ -95,27 +97,69 @@ class Conexion():
                         break
                 #time.sleep(10)
             else:
-                totalPedidos = self.cantidadRegistros * 2
-                totalBytes = totalPedidos / float(250)
-                iteraciones = math.ceil(totalBytes)
-                print("Iteraciones: %d" % iteraciones)
-                registros = 125
-                registrosRecorridos = 0
-                i = 1
-                while (i <= iteraciones):
-                    print("Iteracion: %d" % i)
-                    if (i != iteraciones):
-                        i += 1
-                        tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos, registros)
-                        self.comunicacionPuerto(tramaEnviar)
-                        registrosRecorridos += 125
-                        time.sleep(2)
-                    else:
-                        registrosRestantes = self.cantidadRegistros - registrosRecorridos
-                        tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos,registrosRestantes)
-                        self.comunicacionPuerto(tramaEnviar)
-                        i += 1
-                        time.sleep(2)
+                    totalPedidos = self.cantidadRegistros * 2
+                    totalBytes = totalPedidos / float(250)
+                    iteraciones = math.ceil(totalBytes)
+                    print("Iteraciones: %d" % iteraciones)
+                    registros = 125
+                    registrosRecorridos = 0
+                    i = 1
+                    while (i <= iteraciones):
+                        print("Iteracion: %d" % i)
+                        if (i != iteraciones):
+                            tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos, registros)
+                            exitoComunicacion = self.comunicacionPuerto(tramaEnviar)
+                            if (exitoComunicacion):
+                                i += 1
+                                print("Trama Solicitud: %s" % self.trama)
+                                self.imprimir_trama_enviada(self.trama)
+                                print("Trama devuelta: %s" % self.devolucion)
+                                self.imprimir_trama_recibida(self.devolucion)
+                                self.obtenerBinario(self.datosConvertir)
+                                self.obtenerHexadecimal(self.datosConvertir)
+                                self.obtenerDecimal(self.datosConvertir)
+                                registrosRecorridos += 125
+                                time.sleep(2)
+                            else:
+                                self.intentos -= 1
+                                print("intentos restantes: %d" % self.intentos)
+                                if (self.intentos == 0):
+                                    print("se acabaron los intentos")
+                                    self.gui.Scrolledlistbox2.insert(1, "No hay mas intentos disponibles")
+                                    self.gui.Scrolledlistbox2.insert(2, self.descripcionError)
+                                    break
+
+                        else:
+                            registrosRestantes = self.cantidadRegistros - registrosRecorridos
+                            tramaEnviar = self.obtenerTrama(self.dispositivo, self.funcion, registrosRecorridos,registrosRestantes)
+                            exitoComunicacion = self.comunicacionPuerto(tramaEnviar)
+                            time.sleep(2)
+                            if (exitoComunicacion):
+                                i += 1
+                                print("Trama Solicitud: %s" % self.trama)
+                                self.imprimir_trama_enviada(self.trama)
+                                print("Trama devuelta: %s" % self.devolucion)
+                                self.imprimir_trama_recibida(self.devolucion)
+                                self.obtenerBinario(self.datosConvertir)
+                                self.obtenerHexadecimal(self.datosConvertir)
+                                self.obtenerDecimal(self.datosConvertir)
+                                registrosRecorridos += 125
+                                time.sleep(2)
+                                llamada_exitosa = True
+                                break
+                            else:
+                                self.intentos -= 1
+                                print("intentos restantes: %d" % self.intentos)
+                                if (self.intentos == 0):
+                                    print("se acabaron los intentos")
+                                    self.gui.Scrolledlistbox2.insert(1, "No hay mas intentos disponibles")
+                                    self.gui.Scrolledlistbox2.insert(2, self.descripcionError)
+                                    break
+                                else:
+                                    continue
+
+            if llamada_exitosa:
+                break
 
 
     def ejecutar_funcion06(self,intentos,dispositivo,direccion,variable):
@@ -128,25 +172,6 @@ class Conexion():
         self.obtenerRespuestas_funcion06()
 
 
-    """def conexion_puerto_funcion06(self,puerto,baudrate,timeout,intentos,dispositivo,funcion,direccion,variable):
-        self.puerto = puerto
-        self.baudrate = int(baudrate)
-        self.timeout = int(timeout)
-        self.intentos=int(intentos)
-        self.dispositivo = int(dispositivo)
-        self.funcion = int(funcion)
-        self.direccion = int(direccion)
-        self.variable1 = int(variable)
-
-        self.ser.port = self.puerto
-        self.ser.baudrate = self.baudrate
-        self.ser.timeout = self.timeout
-        self.ser.open()
-        if (self.ser.is_open):
-            return True
-        else:
-            return False
-    """
     def ejecutar_funcion16(self, intentos,registros,dispositivo, direccion,variable1,variable2,variable3=0,variable4=0):
         self.intentos = int(intentos)
         self.cantidadRegistros = int(registros)
