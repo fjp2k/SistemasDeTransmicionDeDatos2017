@@ -437,7 +437,7 @@ class Trabajo_Practico_1:
         self.Label12.configure(highlightbackground="#d9d9d9")
         self.Label12.configure(highlightcolor="black")
         self.Label12.configure(text='''Variable 1''')
-
+        
         self.EntryVariable1 = Entry(top)
         self.EntryVariable1.place(relx=0.17, rely=0.2, relheight=0.04
                 , relwidth=0.25)
