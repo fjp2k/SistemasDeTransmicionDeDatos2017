@@ -327,6 +327,7 @@ class Conexion():
             crc = "0" + crc
         return crc[2:] + crc[:2]
 
+
     def comunicacionPuerto(self,trama):
         self.trama = trama
         resultado=self.ser.write(binascii.unhexlify(self.trama))
@@ -377,7 +378,7 @@ class Conexion():
         print(igualdad)
         if (igualdad):
                 self.datosConvertir = devolucion[6:devolucion.__len__() - 4]
-                print("todo ok")
+                print("Crc de respuesta correcto")
                 return True
         else:
                 print("Error crc distintos")
@@ -395,54 +396,14 @@ class Conexion():
         else:
             return False
 
-    """def comunicacionPuerto_funcion03(self, trama):
-        self.trama = trama
-        self.ser.write(binascii.unhexlify(self.trama))
-        mensaje = binascii.hexlify(self.ser.read(5 + self.cantidadRegistros * 2))
-        
-        print("Trama Solicitud: %s" % self.trama)
-        self.imprimir_trama_enviada(self.trama)
-        print("Trama devuelta: %s" % mensaje)
-        self.imprimir_trama_recibida(mensaje)
-        print("\n")
-        datosConvertir = mensaje[6:mensaje.__len__() - 4]
-        self.obtenerBinario(datosConvertir)
-        self.obtenerHexadecimal(datosConvertir)
-        self.obtenerDecimal(datosConvertir)
 
-    def comunicacionPuerto_funcion06(self,trama):
-        print("\tTrama enviada: %s" % trama)
-        self.imprimir_trama_enviada(trama)
-        resultado = self.ser.write(binascii.unhexlify(trama))
-        devolucion = binascii.hexlify(self.ser.read(resultado))
-        print("\tTrama devuelta: %s" % devolucion)
-        self.imprimir_trama_recibida(devolucion)
-
-        datosConvertir = devolucion[8:devolucion.__len__() - 4]
-        self.obtenerBinario(datosConvertir)
-        self.obtenerHexadecimal(datosConvertir)
-        self.obtenerDecimal(datosConvertir)
-
-    def comunicacionPuerto_funcion16(self,trama):
-
-        print("\tTrama enviada: %s" % trama)
-        self.imprimir_trama_enviada(trama)
-        resultado = self.ser.write(binascii.unhexlify(trama))
-        devolucion = binascii.hexlify(self.ser.read(8))
-        print("\tTrama devuelta: %s" % devolucion)
-        self.imprimir_trama_recibida(devolucion)
-
-        datosConvertir = trama[14:trama.__len__() - 4]
-        self.obtenerBinario(datosConvertir)
-        self.obtenerHexadecimal(datosConvertir)
-        self.obtenerDecimal(datosConvertir)
-    """
     def obtenerBinario(self,datosConvertir):
         i=0
         while (i < datosConvertir.__len__()):
             conversion = int(datosConvertir[i:i + 4], 16)
             self.datosBinario.append(bin(conversion))
             i = i + 4
+
 
     def obtenerHexadecimal(self,datosConvertir):
         i=0
@@ -451,6 +412,7 @@ class Conexion():
             self.datosHexadecimal.append(hex(conversion))
             i = i + 4
 
+
     def obtenerDecimal(self,datosConvertir):
         i = 0
         while (i < datosConvertir.__len__()):
@@ -458,11 +420,13 @@ class Conexion():
             self.datosDecimal.append(conversion)
             i = i + 4
 
+
     def imprimirRespuesta(self,datos):
 
         self.gui.Scrolledlistbox3.delete(0, END)
         j=1
         for i in datos:
-            self.gui.Scrolledlistbox3.insert(j,i)
+            direccion = j + int(self.direccion)
+            self.gui.Scrolledlistbox3.insert(j, "Variable %d: %s " %(direccion,i))
             j+=1
 

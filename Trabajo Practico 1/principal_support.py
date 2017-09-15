@@ -139,7 +139,7 @@ def verificar_datos():
         datos_correctos = False
         w.Scrolledlistbox1.insert(index, "Baudios incorrectos")
         index = index + 1
-
+    """  
     if w.timeoutEntry.get() == '':
         datos_correctos = False
         w.Scrolledlistbox1.insert(index, "Timeout incorrecto")
@@ -152,7 +152,8 @@ def verificar_datos():
         datos_correctos = False
         w.Scrolledlistbox1.insert(index, "Timeout incorrecto")
         index = index + 1
-
+    """
+    
     if w.intentosEntry.get() == '':
         datos_correctos = False
         w.Scrolledlistbox1.insert(index, "Cantidad intentos incorrectos")
@@ -192,6 +193,7 @@ def verificar_datos():
         w.Scrolledlistbox1.insert(index, "Direccion incorrecta")
         index = index + 1
 
+    cantidad_de_variables = 0
     if w.variablesEntry.get() == '':
         datos_correctos = False
         w.Scrolledlistbox1.insert(index, "Cantidad variables incorrecta")
@@ -204,13 +206,15 @@ def verificar_datos():
         datos_correctos = False
         w.Scrolledlistbox1.insert(index, "Cantidad variables incorrecta")
         index = index + 1
+    else:
+        cantidad_de_variables = int(w.variablesEntry.get())
 
     if (w.funcionCombo.get() == '' or not (w.funcionCombo.get() == '3' or w.funcionCombo.get() == '6' or w.funcionCombo.get() == '16')):
         datos_correctos = False
         w.Scrolledlistbox1.insert(index, "Funcion incorrecta")
         index = index + 1
 
-    if w.funcionCombo.get() == '6' or w.funcionCombo.get() == '16':
+    if w.funcionCombo.get() == '6':
 
         if w.EntryVariable1.get() == '':
             datos_correctos = False
@@ -224,5 +228,79 @@ def verificar_datos():
             datos_correctos = False
             w.Scrolledlistbox1.insert(index, "Variable incorrecta")
             index = index + 1
+
+    if w.funcionCombo.get() == '16':
+
+            if cantidad_de_variables >= 1:
+                if w.EntryVariable1.get() == '':
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 1 incorrecta")
+                    index = index + 1
+                elif not w.EntryVariable1.get().isdigit():
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 1 incorrecta")
+                    index = index + 1
+                elif not isinstance(int(w.EntryVariable1.get()), (int, long)):
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 1 incorrecta")
+                    index = index + 1
+                elif int(w.EntryVariable1.get()) > 65535:
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 1 incorrecta")
+                    index = index + 1
+
+            if cantidad_de_variables >= 2:
+                if w.EntryVariable2.get() == '':
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 2 incorrecta")
+                    index = index + 1
+                elif not w.EntryVariable2.get().isdigit():
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 2 incorrecta")
+                    index = index + 1
+                elif not isinstance(int(w.EntryVariable2.get()), (int, long)):
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 2 incorrecta")
+                    index = index + 1
+                elif int(w.EntryVariable2.get()) > 65535:
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 2 incorrecta")
+                    index = index + 1
+
+            if cantidad_de_variables >= 3:
+                if w.EntryVariable3.get() == '':
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 3 incorrecta")
+                    index = index + 1
+                elif not w.EntryVariable3.get().isdigit():
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 3 incorrecta")
+                    index = index + 1
+                elif not isinstance(int(w.EntryVariable3.get()), (int, long)):
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 3 incorrecta")
+                    index = index + 1
+                elif int(w.EntryVariable3.get()) > 65535:
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 3 incorrecta")
+                    index = index + 1
+
+            if cantidad_de_variables == 4:
+                if w.EntryVariable4.get() == '':
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 4 incorrecta")
+                    index = index + 1
+                elif not w.EntryVariable4.get().isdigit():
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 4 incorrecta")
+                    index = index + 1
+                elif not isinstance(int(w.EntryVariable4.get()), (int, long)):
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 4 incorrecta")
+                    index = index + 1
+                elif int(w.EntryVariable4.get()) > 65535:
+                    datos_correctos = False
+                    w.Scrolledlistbox1.insert(index, "Variable 4 incorrecta")
+                    index = index + 1
 
     return datos_correctos
