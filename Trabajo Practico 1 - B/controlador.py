@@ -18,10 +18,12 @@ class Controlador:
     def __init__(self, gui):
 
         self.gui = gui
-        self.conexion = Conexion(self.gui)
+        self.conexion = Conexion(controlador=self)
 
         self.tipo_conexion_seleccionada = IntVar()
         self.list_box_error_index = 1
+
+        self.direccion_inicial_elegida = 0
 
     # Configuracion Extra GUI
 
@@ -85,6 +87,9 @@ class Controlador:
 
                 if conectado:
                     self.dibujar_estado_conectado()
+
+                    self.direccion_inicial_elegida = int(self.gui.direccionInicialEntry.get())
+
                     if self.tipo_conexion_seleccionada.get() == 1:
                         self.ejecutar_funcion_puerto_serie()
                     elif self.tipo_conexion_seleccionada.get() == 2:
@@ -100,13 +105,13 @@ class Controlador:
                 self.gui.valorEstadoConexionLb.config(text='Datos ingresados son incorrectos')
 
     def convertir_binario(self):
-        self.conexion.imprimirRespuesta(self.conexion.datosBinario)
+        self.imprimir_respuesta(self.conexion.datosBinario)
 
     def convertir_decimal(self):
-        self.conexion.imprimirRespuesta(self.conexion.datosDecimal)
+        self.imprimir_respuesta(self.conexion.datosDecimal)
 
     def convertir_hexadecimal(self):
-        self.conexion.imprimirRespuesta(self.conexion.datosHexadecimal)
+        self.imprimir_respuesta(self.conexion.datosHexadecimal)
 
     def desconectar(self):
         desconectar = self.conexion.desconectarpuerto()
@@ -121,13 +126,18 @@ class Controlador:
 
     def conectar_puerto_serie(self):
         print "Conectar por puerto serie"
-        return self.conexion.conexion_puerto(puerto=self.gui.puertoEntry.get(),
+        return self.conexion.conexion_puerto(puerto=self.gui.puertoSerialEntry.get(),
                                              baudrate=self.gui.baudiosEntry.get(),
                                              timeout=self.gui.timeoutEntry.get())
 
     def conectar_tcp(self):
         print "Conectar por TCP"
         # TODO llamar funcion
+        """
+        self.gui.direccionIPEntry,
+        self.gui.puertoTCPEntry
+        """
+
         return False
 
     # Metodos ejecucion funcion
@@ -165,14 +175,33 @@ class Controlador:
         if funcion == "3":
             print "Ejecutar funcion 03 por TCP"
             # TODO Llamar funcion
+            """
+            dispositivo = self.gui.dispositivoEntry.get(),
+            direccion = self.gui.direccionInicialEntry.get(),
+            cantidadRegistros = self.gui.cantidadVariablesEntry.get()
+            """
 
         if funcion == "6":
             print "Ejecutar funcion 06 por TCP"
             # TODO Llamar funcion
+            """
+            dispositivo=self.gui.dispositivoEntry.get(),
+            direccion=self.gui.direccionInicialEntry.get(),
+            variable=self.gui.variable1Entry.get()
+            """
 
         if funcion == "16":
             print "Ejecutar funcion 16 por TCP"
             # TODO Llamar funcion
+            """
+            registros = self.gui.cantidadVariablesEntry.get(),
+            dispositivo = self.gui.dispositivoEntry.get(),
+            direccion = self.gui.direccionInicialEntry.get(),
+            variable1 = self.gui.variable1Entry.get(),
+            variable2 = self.gui.variable2Entry.get(),
+            variable3 = self.gui.variable3Entry.get(),
+            variable4 = self.gui.variable4Entry.get()
+            """
 
     # Metodos Util
 
@@ -414,4 +443,46 @@ class Controlador:
                     self.gui.respuestaListBox.insert(self.list_box_error_index, "Variable 4 incorrecta")
                     self.list_box_error_index = self.list_box_error_index + 1
 
-                return datos_correctos
+        return datos_correctos
+
+    def imprimir_trama_enviada(self, trama):
+        """
+        Imprime la trama enviadas en el listbox de tramas enviadas (izquierdo)
+        :param trama:
+        :return:
+        """
+        self.gui.tramasSolicitudListBox.insert(1, trama)
+
+    def imprimir_trama_recibida(self, trama):
+        """
+        Imprime la trama enviadas en el listbox de tramas recibidas (derecho)
+        :param trama:
+        :return:
+        """
+        self.gui.tramasRespuestaListBox.insert(1, trama)
+
+    def imprimir_respuesta(self, datos):
+        """
+        Se imprimen las respuestas en el listbox de respiuestas (inferior)
+        :param datos:
+        :return:
+        """
+        # Se limpia la tabla de respuestas
+        self.gui.respuestaListBox.delete(0, END)
+        j = 1
+        for i in datos:
+            direccion = j + int(self.direccion_inicial_elegida)
+            self.gui.respuestaListBox.insert(j, "Variable %d: %s " % (direccion, i))
+            j += 1
+
+    def imprimir_error_llamada(self, mensaje, descripcion_error):
+        """
+        Imprime en el listbox de tramas recibidas (derecho) los errores que se produjeron por la llamada
+        :param mensaje:
+        :param descripcion_error:
+        :return:
+        """
+        self.limpiar_resultados()
+
+        self.gui.tramasRespuestaListBox.insert(1, mensaje)
+        self.gui.tramasRespuestaListBox.insert(2, descripcion_error)

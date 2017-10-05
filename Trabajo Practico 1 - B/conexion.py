@@ -9,9 +9,9 @@ from errorController import *
 
 class Conexion():
 
-    def __init__(self, gui):
+    def __init__(self, controlador):
 
-        self.gui = gui
+        self.controlador = controlador
         self.ser = serial.Serial()
 
         self.puerto = ""
@@ -25,7 +25,7 @@ class Conexion():
         self.dispositivo = 0
         self.direccion = 0
         self.cantidadRegistros = 0
-        self.variable1=0
+        self.variable1 = 0
         self.variable2 = 0
         self.variable3 = 0
         self.variable4 = 0
@@ -79,9 +79,9 @@ class Conexion():
                 print("exito: %s"%exitoComunicacion)
                 if(exitoComunicacion):
                     print("Trama Solicitud: %s" % self.trama)
-                    self.imprimir_trama_enviada(self.trama)
+                    self.controlador.imprimir_trama_enviada(self.trama)
                     print("Trama devuelta: %s" % self.devolucion)
-                    self.imprimir_trama_recibida(self.devolucion)
+                    self.controlador.imprimir_trama_recibida(self.devolucion)
                     self.obtenerBinario(self.datosConvertir)
                     self.obtenerHexadecimal(self.datosConvertir)
                     self.obtenerDecimal(self.datosConvertir)
@@ -92,8 +92,8 @@ class Conexion():
                     print("intentos restantes: %d"%self.intentos)
                     if(self.intentos==0):
                         print("se acabaron los intentos")
-                        self.gui.Scrolledlistbox2.insert(1,"No hay mas intentos disponibles")
-                        self.gui.Scrolledlistbox2.insert(2,self.descripcionError)
+                        self.controlador.imprimir_error_llamada("No hay mas intentos disponibles",
+                                                                self.descripcionError)
                         break
                 #time.sleep(10)
             else:
@@ -112,9 +112,9 @@ class Conexion():
                             if (exitoComunicacion):
                                 i += 1
                                 print("Trama Solicitud: %s" % self.trama)
-                                self.imprimir_trama_enviada(self.trama)
+                                self.controlador.imprimir_trama_enviada(self.trama)
                                 print("Trama devuelta: %s" % self.devolucion)
-                                self.imprimir_trama_recibida(self.devolucion)
+                                self.controlador.imprimir_trama_recibida(self.devolucion)
                                 self.obtenerBinario(self.datosConvertir)
                                 self.obtenerHexadecimal(self.datosConvertir)
                                 self.obtenerDecimal(self.datosConvertir)
@@ -125,8 +125,8 @@ class Conexion():
                                 print("intentos restantes: %d" % self.intentos)
                                 if (self.intentos == 0):
                                     print("se acabaron los intentos")
-                                    self.gui.Scrolledlistbox2.insert(1, "No hay mas intentos disponibles")
-                                    self.gui.Scrolledlistbox2.insert(2, self.descripcionError)
+                                    self.controlador.imprimir_error_llamada("No hay mas intentos disponibles",
+                                                                            self.descripcionError)
                                     break
 
                         else:
@@ -137,9 +137,9 @@ class Conexion():
                             if (exitoComunicacion):
                                 i += 1
                                 print("Trama Solicitud: %s" % self.trama)
-                                self.imprimir_trama_enviada(self.trama)
+                                self.controlador.imprimir_trama_enviada(self.trama)
                                 print("Trama devuelta: %s" % self.devolucion)
-                                self.imprimir_trama_recibida(self.devolucion)
+                                self.controlador.imprimir_trama_recibida(self.devolucion)
                                 self.obtenerBinario(self.datosConvertir)
                                 self.obtenerHexadecimal(self.datosConvertir)
                                 self.obtenerDecimal(self.datosConvertir)
@@ -152,8 +152,8 @@ class Conexion():
                                 print("intentos restantes: %d" % self.intentos)
                                 if (self.intentos == 0):
                                     print("se acabaron los intentos")
-                                    self.gui.Scrolledlistbox2.insert(1, "No hay mas intentos disponibles")
-                                    self.gui.Scrolledlistbox2.insert(2, self.descripcionError)
+                                    self.controlador.imprimir_error_llamada("No hay mas intentos disponibles",
+                                                                            self.descripcionError)
                                     break
                                 else:
                                     continue
@@ -198,14 +198,6 @@ class Conexion():
         self.ser.close()
         return True
 
-    def imprimir_trama_enviada(self, trama):
-
-        self.gui.Scrolledlistbox1.insert(1, trama)
-
-    def imprimir_trama_recibida(self, trama):
-
-        self.gui.Scrolledlistbox2.insert(1, trama)
-
     def obtenerRespuestas_funcion06(self):
         t1 = threading.Thread(target=self.obtenerRespuestas_funcion06_thread)
         t1.start()
@@ -217,9 +209,9 @@ class Conexion():
 
             if (exitoComunicacion):
                 print("Trama Solicitud: %s" % self.trama)
-                self.imprimir_trama_enviada(self.trama)
+                self.controlador.imprimir_trama_enviada(self.trama)
                 print("Trama devuelta: %s" % self.devolucion)
-                self.imprimir_trama_recibida(self.devolucion)
+                self.controlador.imprimir_trama_recibida(self.devolucion)
                 self.obtenerBinario(self.datosConvertir)
                 self.obtenerHexadecimal(self.datosConvertir)
                 self.obtenerDecimal(self.datosConvertir)
@@ -229,8 +221,8 @@ class Conexion():
                 print("intentos restantes: %d" % self.intentos)
                 if (self.intentos == 0):
                     print("se acabaron los intentos")
-                    self.gui.Scrolledlistbox2.insert(1, "No hay mas intentos disponibles")
-                    self.gui.Scrolledlistbox2.insert(2, self.descripcionError)
+                    self.controlador.imprimir_error_llamada("No hay mas intentos disponibles",
+                                                            self.descripcionError)
                     break
 
 
@@ -244,9 +236,9 @@ class Conexion():
             exitoComunicacion=self.comunicacionPuerto(tramaEnvio)
             if (exitoComunicacion):
                 print("Trama Solicitud: %s" % self.trama)
-                self.imprimir_trama_enviada(self.trama)
+                self.controlador.imprimir_trama_enviada(self.trama)
                 print("Trama devuelta: %s" % self.devolucion)
-                self.imprimir_trama_recibida(self.devolucion)
+                self.controlador.imprimir_trama_recibida(self.devolucion)
                 self.obtenerBinario(self.datosConvertir)
                 self.obtenerHexadecimal(self.datosConvertir)
                 self.obtenerDecimal(self.datosConvertir)
@@ -256,8 +248,8 @@ class Conexion():
                 print("intentos restantes: %d" % self.intentos)
                 if (self.intentos == 0):
                     print("se acabaron los intentos")
-                    self.gui.Scrolledlistbox2.insert(1, "No hay mas intentos disponibles")
-                    self.gui.Scrolledlistbox2.insert(2, self.descripcionError)
+                    self.controlador.imprimir_error_llamada("No hay mas intentos disponibles",
+                                                            self.descripcionError)
                     break
 
 
@@ -419,14 +411,3 @@ class Conexion():
             conversion = int(datosConvertir[i:i + 4], 16)
             self.datosDecimal.append(conversion)
             i = i + 4
-
-
-    def imprimirRespuesta(self,datos):
-
-        self.gui.Scrolledlistbox3.delete(0, END)
-        j=1
-        for i in datos:
-            direccion = j + int(self.direccion)
-            self.gui.Scrolledlistbox3.insert(j, "Variable %d: %s " %(direccion,i))
-            j+=1
-
