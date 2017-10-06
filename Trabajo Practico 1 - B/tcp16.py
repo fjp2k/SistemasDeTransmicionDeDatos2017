@@ -69,9 +69,13 @@ def armarTramaFuncion16(headerTCP,direccionRecibida,cantVariablesRecibidas,valor
     cantBytes = ('%.2x' % intCantBytes)
 
     tramaTCP = headerTCP + functionCode + address +totalRegister + cantBytes
+    i = 0
+    while (i < valores.__len__()):
+        tramaTCP = tramaTCP + str(valores[i])
+        i += 1
 
-    for i in valores.__len__():
-        tramaTCP = tramaTCP + valores(i)
+
+    print("TRAMA TCP: %s" %tramaTCP)
 
 
     enviarTramaTCP(tramaTCP)
@@ -137,7 +141,7 @@ def imprimirHexadecimal():
         datosHexadecimal.append(hex(conversion))
         i = i + 4
 
-    print("DATOS HEZADECIMAL")
+    print("DATOS HEXADECIMAL")
     i = 0
     while (i < datosHexadecimal.__len__()):
         print("Direccion %d: %s" % (i, datosHexadecimal[i]))

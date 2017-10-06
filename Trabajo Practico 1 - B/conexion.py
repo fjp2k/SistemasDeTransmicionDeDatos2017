@@ -2,6 +2,7 @@ import serial
 import binascii
 import time
 import math
+import socket
 import principal_support
 import threading
 from Tkinter import *
@@ -36,7 +37,16 @@ class Conexion():
         self.datosHexadecimal = []
         self.datosDecimal = []
         self.datosConvertir=[]
+        self.datosImprimir=[]
         self.descripcionError=""
+        self.cantBytes=0
+        #todo tcp
+
+        self.ip = 0
+        #usamos la misma variable de puerto tanto para tcp com serial
+        self.sock = 0
+        self.transaction = 1
+        self.BUFFER_SIZE = 1024
 
 
     def conexion_puerto(self,puerto,baudrate,timeout):
@@ -411,3 +421,162 @@ class Conexion():
             conversion = int(datosConvertir[i:i + 4], 16)
             self.datosDecimal.append(conversion)
             i = i + 4
+
+
+#TODO TCP
+
+    def conectarTCP(self,ip,puerto):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            self.sock.connect((ip, int(puerto)))
+            print("conexion tcp exitosa")
+            return True
+
+        except Exception as e:
+            print("no se pudo conectar tcp")
+            print(e);
+            return False
+
+    def cerrarConexionTCP(self):
+        self.sock.close()
+        return True
+
+    def ejecutar_funcion_tcp(self,dispositivoRecibido,direccionRecibida,cantVariablesRecibidas,funcionRecibida,variable1=0,variable2=0,variable3=0,variable4=0):
+        self.transaction += 1
+        intTransactionId = int(self.transaction)
+        intProtocolId = 0000
+        if(funcionRecibida=="16"):
+            self.cantidadRegistros=int(cantVariablesRecibidas)
+            self.cantBytes = int(cantVariablesRecibidas) * 2
+            print(self.cantBytes)
+            intMessageLength = 7 + self.cantBytes
+            print("message: %s"%intMessageLength)
+            if (cantVariablesRecibidas == "2"):
+                self.variable1 = ('%.4x' % int(variable1))
+                self.variable2 = ('%.4x' % int(variable2))
+            if (cantVariablesRecibidas == "3"):
+                self.variable1 = ('%.4x' % int(variable1))
+                self.variable2 = ('%.4x' % int(variable2))
+                self.variable3 = ('%.4x' % int(variable3))
+            if (cantVariablesRecibidas == "4"):
+                self.variable1 = ('%.4x' % int(variable1))
+                self.variable2 = ('%.4x' % int(variable2))
+                self.variable3 = ('%.4x' % int(variable3))
+                self.variable4 = ('%.4x' % int(variable4))
+        else:
+            intMessageLength = 0006
+
+        intUnitId = int(dispositivoRecibido)
+        transactionId = ('%.4x' % intTransactionId)
+        protocolId = ('%.4x' % intProtocolId)
+        messageLength = ('%.4x' % intMessageLength)
+        unitId = ('%.2x' % intUnitId)
+        headerTCP = transactionId + protocolId + messageLength + unitId
+        print("HEADER TCP: %s"%headerTCP)
+        self.armarTramaFuncion(headerTCP, direccionRecibida, cantVariablesRecibidas,funcionRecibida)
+
+    def armarTramaFuncion(self,headerTCP,direccionRecibida,cantVariablesRecibidas,funcionRecibida):
+        if(funcionRecibida=="3"):
+            self.funcion=03
+        if(funcionRecibida=="6"):
+            self.funcion=06
+
+        if(funcionRecibida=="16"):
+            self.funcion=16
+            intCantBytes = ('%.2x' % self.cantBytes)
+
+            intFunctionCode = self.funcion
+            intAddress = int(direccionRecibida)
+            intTotalRegister = int(cantVariablesRecibidas)
+
+            functionCode = ('%.2x' % intFunctionCode)
+            address = ('%.4x' % intAddress)
+            totalRegister = ('%.4x' % intTotalRegister)
+
+            tramaTCP = headerTCP + functionCode + address + totalRegister + intCantBytes
+
+            if(cantVariablesRecibidas=="2"):
+                tramaTCP = headerTCP + functionCode + address + totalRegister + intCantBytes + self.variable1 + self.variable2
+
+            if (cantVariablesRecibidas == "3"):
+                tramaTCP = headerTCP + functionCode + address + totalRegister + intCantBytes + self.variable1 + self.variable2 + self.variable3
+
+            if (cantVariablesRecibidas == "4"):
+                tramaTCP = headerTCP + functionCode + address + totalRegister + intCantBytes + self.variable1 + self.variable2 + self.variable3 + self.variable4
+
+        else:
+            intFunctionCode= self.funcion
+            intAddress = int(direccionRecibida)
+            intTotalRegister = int(cantVariablesRecibidas)
+
+            functionCode = ('%.2x' % intFunctionCode)
+            address = ('%.4x' % intAddress)
+            totalRegister = ('%.4x' % intTotalRegister)
+
+            tramaTCP = headerTCP + functionCode + address + totalRegister
+            print("TRAMA TCP: %s" %tramaTCP)
+
+        comunicacion = self.enviarTramaTCP(tramaTCP)
+        if (comunicacion):
+            print("Trama Solicitud: %s" % self.trama)
+            self.controlador.imprimir_trama_enviada(self.trama)
+            print("Trama devuelta: %s" % self.devolucion)
+            self.controlador.imprimir_trama_recibida(self.devolucion)
+            self.generarContendio(self.devolucion)
+        else:
+            self.controlador.imprimir_error_llamada("Se ha producido un error: ",
+                                                    self.descripcionError)
+
+    def enviarTramaTCP(self,tramaTCP):
+
+        self.trama = tramaTCP
+        self.sock.send(binascii.unhexlify(self.trama))
+        print("Request: %s" % self.trama)
+
+        self.devolucion = self.sock.recv(self.BUFFER_SIZE)
+        self.devolucion = binascii.hexlify(self.devolucion).decode()
+        print("Received: %s " % self.devolucion)
+
+        #PASAMOS LOS ULTIMOS SEIS BIT RECIBIDOS PORQUE SIEMPRE ENTRE ESOS SEIS SE ENCUENTRA EL ERROR
+        verificarError = self.devolucion[self.devolucion.__len__() - 6:]
+        print("Verificar: %s" % verificarError)
+
+        noExisteEerror = controlar_trama(verificarError)
+        print("Error: %r" % noExisteEerror)
+
+        if (noExisteEerror == True):
+            return True
+
+        else:
+            self.descripcionError= obtener_error(verificarError)
+            return False
+
+
+    def generarContendio(self,received):
+        if(self.funcion==03):
+
+            self.datosImprimir = received[18:]
+
+        if(self.funcion==06):
+            self.datosImprimir = received[20:]
+
+        if(self.funcion==16):
+            if(self.cantidadRegistros=="2"):
+                self.datosImprimir.insert(0,self.variable1)
+                self.datosImprimir.insert(1,self.variable2)
+
+            if (self.cantidadRegistros == "3"):
+                self.datosImprimir.insert(0, self.variable1)
+                self.datosImprimir.insert(1, self.variable2)
+                self.datosImprimir.insert(2,self.variable3)
+
+            if (self.cantidadRegistros == "4"):
+                    self.datosImprimir.insert(0, self.variable1)
+                    self.datosImprimir.insert(1, self.variable2)
+                    self.datosImprimir.insert(2, self.variable3)
+                    self.datosImprimir.insert(3, self.variable4)
+
+
+        self.obtenerBinario(self.datosImprimir)
+        self.obtenerDecimal(self.datosImprimir)
+        self.obtenerHexadecimal(self.datosImprimir)

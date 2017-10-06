@@ -122,6 +122,14 @@ class Controlador:
 
             self.gui.valorEstadoConexionLb.config(text='Desconectado')
 
+    def desconectar_tcp(self):
+        desconectar = self.conexion.cerrarConexionTCP()
+
+        if desconectar:
+            self.dibujar_estado_desconectado()
+            self.limpiar_resultados()
+
+            self.gui.valorEstadoConexionLb.config(text='Desconectado')
     # Metodos conexion
 
     def conectar_puerto_serie(self):
@@ -132,13 +140,8 @@ class Controlador:
 
     def conectar_tcp(self):
         print "Conectar por TCP"
-        # TODO llamar funcion
-        """
-        self.gui.direccionIPEntry,
-        self.gui.puertoTCPEntry
-        """
-
-        return False
+        return self.conexion.conectarTCP(ip=self.gui.direccionIPEntry.get(),
+                                         puerto=self.gui.puertoTCPEntry.get())
 
     # Metodos ejecucion funcion
 
@@ -175,33 +178,32 @@ class Controlador:
         if funcion == "3":
             print "Ejecutar funcion 03 por TCP"
             # TODO Llamar funcion
-            """
-            dispositivo = self.gui.dispositivoEntry.get(),
-            direccion = self.gui.direccionInicialEntry.get(),
-            cantidadRegistros = self.gui.cantidadVariablesEntry.get()
-            """
+            self.conexion.ejecutar_funcion_tcp(dispositivoRecibido=self.gui.dispositivoEntry.get(),
+                                               direccionRecibida=self.gui.direccionInicialEntry.get(),
+                                               cantVariablesRecibidas=self.gui.cantidadVariablesEntry.get(),
+                                               funcionRecibida=self.gui.funcionCombo.get())
+
+
 
         if funcion == "6":
             print "Ejecutar funcion 06 por TCP"
             # TODO Llamar funcion
-            """
-            dispositivo=self.gui.dispositivoEntry.get(),
-            direccion=self.gui.direccionInicialEntry.get(),
-            variable=self.gui.variable1Entry.get()
-            """
 
+            self.conexion.ejecutar_funcion_tcp(dispositivoRecibido=self.gui.dispositivoEntry.get(),
+                                               direccionRecibida=self.gui.direccionInicialEntry.get(),
+                                               cantVariablesRecibidas=self.gui.variable1Entry.get(),
+                                               funcionRecibida=self.gui.funcionCombo.get())
         if funcion == "16":
             print "Ejecutar funcion 16 por TCP"
             # TODO Llamar funcion
-            """
-            registros = self.gui.cantidadVariablesEntry.get(),
-            dispositivo = self.gui.dispositivoEntry.get(),
-            direccion = self.gui.direccionInicialEntry.get(),
-            variable1 = self.gui.variable1Entry.get(),
-            variable2 = self.gui.variable2Entry.get(),
-            variable3 = self.gui.variable3Entry.get(),
-            variable4 = self.gui.variable4Entry.get()
-            """
+            self.conexion.ejecutar_funcion_tcp( dispositivoRecibido=self.gui.dispositivoEntry.get(),
+                                                direccionRecibida=self.gui.direccionInicialEntry.get(),
+                                                cantVariablesRecibidas=self.gui.cantidadVariablesEntry.get(),
+                                                funcionRecibida=self.gui.funcionCombo.get(),
+                                                variable1=self.gui.variable1Entry.get(),
+                                                variable2=self.gui.variable2Entry.get(),
+                                                variable3=self.gui.variable3Entry.get(),
+                                                variable4=self.gui.variable4Entry.get())
 
     # Metodos Util
 

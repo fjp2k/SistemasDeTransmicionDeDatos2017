@@ -147,7 +147,7 @@ def imprimirDecimal():
 
 configurarSocket("127.0.0.1",502)
 if(conectarSocket()):
-    armarHeaderFuncion03(0,1212,1)
+    armarHeaderFuncion03(0,25,1)
 else:
     print("todo mal")
 
