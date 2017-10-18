@@ -45,6 +45,7 @@ class Controlador:
         # Entries Configuracion TCP
         self.gui.direccionIPEntry.config(state=DISABLED)
         self.gui.puertoTCPEntry.config(state=DISABLED)
+        self.gui.timeOutTCPEntry.config(state=DISABLED)
 
     # Accion botones
 
@@ -58,6 +59,7 @@ class Controlador:
         # Entries Configuracion TCP
         self.gui.direccionIPEntry.config(state=DISABLED)
         self.gui.puertoTCPEntry.config(state=DISABLED)
+        self.gui.timeOutTCPEntry.config(state=DISABLED)
 
     def seleccionar_tcp(self):
         # Entries Configuracion Puerto Serie
@@ -69,6 +71,7 @@ class Controlador:
         # Entries Configuracion TCP
         self.gui.direccionIPEntry.config(state=NORMAL)
         self.gui.puertoTCPEntry.config(state=NORMAL)
+        self.gui.timeOutTCPEntry.config(state=NORMAL)
 
     def conectar(self):
 
@@ -141,7 +144,8 @@ class Controlador:
     def conectar_tcp(self):
         print "Conectar por TCP"
         return self.conexion.conectarTCP(ip=self.gui.direccionIPEntry.get(),
-                                         puerto=self.gui.puertoTCPEntry.get())
+                                         puerto=self.gui.puertoTCPEntry.get(),
+                                         timeout=self.gui.timeOutTCPEntry.get())
 
     # Metodos ejecucion funcion
 
@@ -301,6 +305,19 @@ class Controlador:
         if self.gui.puertoTCPEntry.get() == '':
             datos_correctos = False
             self.gui.respuestaListBox.insert(self.list_box_error_index, "Puerto TCP incorrecto")
+            self.list_box_error_index = self.list_box_error_index + 1
+
+        if self.gui.timeOutTCPEntry.get() == '':
+            datos_correctos = False
+            self.gui.respuestaListBox.insert(self.list_box_error_index, "Timeout incorrecto")
+            self.list_box_error_index = self.list_box_error_index + 1
+        elif not self.gui.timeOutTCPEntry.get().isdigit():
+            datos_correctos = False
+            self.gui.respuestaListBox.insert(self.list_box_error_index, "Timeout incorrecto")
+            self.list_box_error_index = self.list_box_error_index + 1
+        elif not isinstance(int(self.gui.timeOutTCPEntry.get()), (int, long)):
+            datos_correctos = False
+            self.gui.respuestaListBox.insert(self.list_box_error_index, "Timeout incorrecto")
             self.list_box_error_index = self.list_box_error_index + 1
 
         return datos_correctos
