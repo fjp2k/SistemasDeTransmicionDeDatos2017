@@ -18,11 +18,11 @@ set vTcl(active_menu_fg) #000000
 # vTcl Code to Load User Fonts
 
 vTcl:font:add_font \
-    "-family {Segoe UI} -size 11 -weight bold -slant roman -underline 0 -overstrike 0" \
+    "-family {Segoe UI} -size 9 -weight bold -slant roman -underline 0 -overstrike 0" \
     user \
     vTcl:font10
 vTcl:font:add_font \
-    "-family {Segoe UI} -size 9 -weight bold -slant roman -underline 0 -overstrike 0" \
+    "-family {Segoe UI} -size 11 -weight bold -slant roman -underline 0 -overstrike 0" \
     user \
     vTcl:font9
 #################################
@@ -89,9 +89,6 @@ proc vTclWindow.top37 {base} {
     wm deiconify $top
     wm title $top "Trabajo Practico 1"
     vTcl:DefineAlias "$top" "Toplevel1" vTcl:Toplevel:WidgetProc "" 1
-    ttk::style configure Entry -background #d9d9d9
-    ttk::style configure Entry -foreground #000000
-    ttk::style configure Entry -font TkDefaultFont
     entry $top.ent38 \
         -background white -disabledforeground {#a3a3a3} -font TkFixedFont \
         -foreground {#000000} -highlightbackground {#d9d9d9} \
@@ -268,21 +265,21 @@ proc vTclWindow.top37 {base} {
     label $top.lab66 \
         -activebackground {#f9f9f9} -activeforeground black \
         -background {#e0e1f5} -disabledforeground {#a3a3a3} \
-        -font $::vTcl(fonts,vTcl:font9,object) -foreground {#000000} \
+        -font $::vTcl(fonts,vTcl:font10,object) -foreground {#000000} \
         -highlightbackground {#d9d9d9} -highlightcolor black -relief groove \
         -text {Tramas de Solicitud} 
     vTcl:DefineAlias "$top.lab66" "tramasSolicitudLb" vTcl:WidgetProc "Toplevel1" 1
     label $top.lab67 \
         -activebackground {#f9f9f9} -activeforeground black \
         -background {#e0e1f5} -disabledforeground {#a3a3a3} \
-        -font $::vTcl(fonts,vTcl:font9,object) -foreground {#000000} \
+        -font $::vTcl(fonts,vTcl:font10,object) -foreground {#000000} \
         -highlightbackground {#d9d9d9} -highlightcolor black -relief groove \
         -text {Tramas de Respuesta} -width 330 
     vTcl:DefineAlias "$top.lab67" "tramasRespuestaLb" vTcl:WidgetProc "Toplevel1" 1
     label $top.lab37 \
         -activebackground {#f9f9f9} -activeforeground black \
         -background {#e0e1f5} -disabledforeground {#a3a3a3} \
-        -font $::vTcl(fonts,vTcl:font9,object) -foreground {#000000} \
+        -font $::vTcl(fonts,vTcl:font10,object) -foreground {#000000} \
         -highlightbackground {#d9d9d9} -highlightcolor black -relief groove \
         -text Respuestas -width 660 
     vTcl:DefineAlias "$top.lab37" "respuestasLb" vTcl:WidgetProc "Toplevel1" 1
@@ -391,31 +388,43 @@ proc vTclWindow.top37 {base} {
     label $top.lab51 \
         -activebackground {#f9f9f9} -activeforeground black \
         -background {#c8bdf4} -disabledforeground {#a3a3a3} \
-        -font $::vTcl(fonts,vTcl:font10,object) -foreground {#000000} \
+        -font $::vTcl(fonts,vTcl:font9,object) -foreground {#000000} \
         -highlightbackground {#d9d9d9} -highlightcolor black -relief groove \
         -text {Configuracion Llamada} -width 440 
     vTcl:DefineAlias "$top.lab51" "configLlamadaLb" vTcl:WidgetProc "Toplevel1" 1
     label $top.cpd55 \
         -activebackground {#f9f9f9} -activeforeground black \
         -background {#c8bdf4} -disabledforeground {#a3a3a3} \
-        -font $::vTcl(fonts,vTcl:font10,object) -foreground {#000000} \
+        -font $::vTcl(fonts,vTcl:font9,object) -foreground {#000000} \
         -highlightbackground {#d9d9d9} -highlightcolor black -relief groove \
         -text Tramas -width 660 
     vTcl:DefineAlias "$top.cpd55" "tramasLb" vTcl:WidgetProc "Toplevel1" 1
     label $top.cpd57 \
         -activebackground {#f9f9f9} -activeforeground black \
         -background {#c8bdf4} -disabledforeground {#a3a3a3} \
-        -font $::vTcl(fonts,vTcl:font10,object) -foreground {#000000} \
+        -font $::vTcl(fonts,vTcl:font9,object) -foreground {#000000} \
         -highlightbackground {#d9d9d9} -highlightcolor black -relief groove \
         -text {Configuracion Puerto Serie} -width 440 
     vTcl:DefineAlias "$top.cpd57" "configPuertoSerieLb" vTcl:WidgetProc "Toplevel1" 1
     label $top.cpd58 \
         -activebackground {#f9f9f9} -activeforeground black \
         -background {#c8bdf4} -disabledforeground {#a3a3a3} \
-        -font $::vTcl(fonts,vTcl:font10,object) -foreground {#000000} \
+        -font $::vTcl(fonts,vTcl:font9,object) -foreground {#000000} \
         -highlightbackground {#d9d9d9} -highlightcolor black -relief groove \
         -text {Configuracion TCP} -width 450 
     vTcl:DefineAlias "$top.cpd58" "configTCPLb" vTcl:WidgetProc "Toplevel1" 1
+    entry $top.cpd41 \
+        -background white -disabledforeground {#a3a3a3} -font TkFixedFont \
+        -foreground {#000000} -highlightbackground {#d9d9d9} \
+        -highlightcolor black -insertbackground black \
+        -selectbackground {#c4c4c4} -selectforeground black 
+    vTcl:DefineAlias "$top.cpd41" "timeOutTCPEntry" vTcl:WidgetProc "Toplevel1" 1
+    label $top.cpd42 \
+        -activebackground {#f9f9f9} -activeforeground black -anchor e \
+        -background {#e7e7e7} -disabledforeground {#a3a3a3} \
+        -foreground {#000000} -highlightbackground {#d9d9d9} \
+        -highlightcolor black -justify right -text {Time Out} 
+    vTcl:DefineAlias "$top.cpd42" "timrOutTCPLb" vTcl:WidgetProc "Toplevel1" 1
     ###################
     # SETTING GEOMETRY
     ###################
@@ -561,6 +570,12 @@ proc vTclWindow.top37 {base} {
     place $top.cpd58 \
         -in $top -x 1240 -y 10 -width 450 -relwidth 0 -height 41 -relheight 0 \
         -anchor ne -bordermode inside 
+    place $top.cpd41 \
+        -in $top -x 1110 -y 130 -width 250 -height 27 -anchor center \
+        -bordermode inside 
+    place $top.cpd42 \
+        -in $top -x 790 -y 120 -width 190 -height 30 -anchor nw \
+        -bordermode inside 
 
     vTcl:FireEvent $base <<Ready>>
 }

@@ -425,8 +425,9 @@ class Conexion():
 
 #TODO TCP
 
-    def conectarTCP(self,ip,puerto):
+    def conectarTCP(self, ip, puerto, timeout):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.timeout = float(timeout)
         try:
             self.sock.connect((ip, int(puerto)))
             print("conexion tcp exitosa")
