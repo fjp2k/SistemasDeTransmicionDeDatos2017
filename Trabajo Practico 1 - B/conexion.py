@@ -190,8 +190,8 @@ class Conexion():
         self.direccion = int(direccion)
 
         if(self.cantidadRegistros==2):
-            self.variable1=('%.4x'%int(variable1))
-            self.variable2 = ('%.4x'%int(variable2))
+            self.variable1 = ('%.4x' % int(variable1))
+            self.variable2 = ('%.4x' % int(variable2))
         if (self.cantidadRegistros == 3):
             self.variable1 = ('%.4x' % int(variable1))
             self.variable2 = ('%.4x' % int(variable2))
@@ -249,6 +249,14 @@ class Conexion():
                 self.controlador.imprimir_trama_enviada(self.trama)
                 print("Trama devuelta: %s" % self.devolucion)
                 self.controlador.imprimir_trama_recibida(self.devolucion)
+                if (self.cantidadRegistros == 2):
+                    self.datosConvertir = self.variable1 + self.variable2
+
+                if (self.cantidadRegistros == 3):
+                    self.datosConvertir = self.variable1 + self.variable2 + self.variable3
+
+                if (self.cantidadRegistros == 4):
+                    self.datosConvertir = self.variable1 + self.variable2 + self.variable3 + self.variable4
                 self.obtenerBinario(self.datosConvertir)
                 self.obtenerHexadecimal(self.datosConvertir)
                 self.obtenerDecimal(self.datosConvertir)
@@ -478,6 +486,7 @@ class Conexion():
     def armarTramaFuncion(self,headerTCP,direccionRecibida,cantVariablesRecibidas,funcionRecibida):
         if(funcionRecibida=="3"):
             self.funcion=03
+
         if(funcionRecibida=="6"):
             self.funcion=06
 
@@ -553,6 +562,7 @@ class Conexion():
 
 
     def generarContendio(self,received):
+
         if(self.funcion==03):
 
             self.datosImprimir = received[18:]
@@ -561,21 +571,14 @@ class Conexion():
             self.datosImprimir = received[20:]
 
         if(self.funcion==16):
-            if(self.cantidadRegistros=="2"):
-                self.datosImprimir.insert(0,self.variable1)
-                self.datosImprimir.insert(1,self.variable2)
+            if(self.cantidadRegistros==2):
+                self.datosImprimir = self.variable1+self.variable2
 
-            if (self.cantidadRegistros == "3"):
-                self.datosImprimir.insert(0, self.variable1)
-                self.datosImprimir.insert(1, self.variable2)
-                self.datosImprimir.insert(2,self.variable3)
+            if (self.cantidadRegistros == 3):
+                self.datosImprimir = self.variable1+self.variable2+self.variable3
 
-            if (self.cantidadRegistros == "4"):
-                    self.datosImprimir.insert(0, self.variable1)
-                    self.datosImprimir.insert(1, self.variable2)
-                    self.datosImprimir.insert(2, self.variable3)
-                    self.datosImprimir.insert(3, self.variable4)
-
+            if (self.cantidadRegistros == 4):
+                self.datosImprimir = self.variable1 + self.variable2 + self.variable3+ self.variable4
 
         self.obtenerBinario(self.datosImprimir)
         self.obtenerDecimal(self.datosImprimir)
