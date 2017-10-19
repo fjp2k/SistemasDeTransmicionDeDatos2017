@@ -433,9 +433,10 @@ class Conexion():
 
 #TODO TCP
 
-    def conectarTCP(self, ip, puerto, timeout):
+    def conectarTCP(self, ip, puerto, intentos):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.timeout = float(timeout)
+        self.sock.settimeout(10)
+        self.intentos = int(intentos)
         try:
             self.sock.connect((ip, int(puerto)))
             print("conexion tcp exitosa")
@@ -451,38 +452,55 @@ class Conexion():
         return True
 
     def ejecutar_funcion_tcp(self,dispositivoRecibido,direccionRecibida,cantVariablesRecibidas,funcionRecibida,variable1=0,variable2=0,variable3=0,variable4=0):
-        self.transaction += 1
-        intTransactionId = int(self.transaction)
-        intProtocolId = 0000
-        if(funcionRecibida=="16"):
-            self.cantidadRegistros=int(cantVariablesRecibidas)
-            self.cantBytes = int(cantVariablesRecibidas) * 2
-            print(self.cantBytes)
-            intMessageLength = 7 + self.cantBytes
-            print("message: %s"%intMessageLength)
-            if (cantVariablesRecibidas == "2"):
-                self.variable1 = ('%.4x' % int(variable1))
-                self.variable2 = ('%.4x' % int(variable2))
-            if (cantVariablesRecibidas == "3"):
-                self.variable1 = ('%.4x' % int(variable1))
-                self.variable2 = ('%.4x' % int(variable2))
-                self.variable3 = ('%.4x' % int(variable3))
-            if (cantVariablesRecibidas == "4"):
-                self.variable1 = ('%.4x' % int(variable1))
-                self.variable2 = ('%.4x' % int(variable2))
-                self.variable3 = ('%.4x' % int(variable3))
-                self.variable4 = ('%.4x' % int(variable4))
-        else:
-            intMessageLength = 0006
+            try:
+                self.transaction += 1
+                intTransactionId = int(self.transaction)
+                intProtocolId = 0000
+                if(funcionRecibida=="16"):
+                    self.cantidadRegistros=int(cantVariablesRecibidas)
+                    self.cantBytes = int(cantVariablesRecibidas) * 2
+                    print(self.cantBytes)
+                    intMessageLength = 7 + self.cantBytes
+                    print("message: %s"%intMessageLength)
+                    if (cantVariablesRecibidas == "2"):
+                        self.variable1 = ('%.4x' % int(variable1))
+                        self.variable2 = ('%.4x' % int(variable2))
+                    if (cantVariablesRecibidas == "3"):
+                        self.variable1 = ('%.4x' % int(variable1))
+                        self.variable2 = ('%.4x' % int(variable2))
+                        self.variable3 = ('%.4x' % int(variable3))
+                    if (cantVariablesRecibidas == "4"):
+                        self.variable1 = ('%.4x' % int(variable1))
+                        self.variable2 = ('%.4x' % int(variable2))
+                        self.variable3 = ('%.4x' % int(variable3))
+                        self.variable4 = ('%.4x' % int(variable4))
+                else:
+                    intMessageLength = 0006
 
-        intUnitId = int(dispositivoRecibido)
-        transactionId = ('%.4x' % intTransactionId)
-        protocolId = ('%.4x' % intProtocolId)
-        messageLength = ('%.4x' % intMessageLength)
-        unitId = ('%.2x' % intUnitId)
-        headerTCP = transactionId + protocolId + messageLength + unitId
-        print("HEADER TCP: %s"%headerTCP)
-        self.armarTramaFuncion(headerTCP, direccionRecibida, cantVariablesRecibidas,funcionRecibida)
+                intUnitId = int(dispositivoRecibido)
+                transactionId = ('%.4x' % intTransactionId)
+                protocolId = ('%.4x' % intProtocolId)
+                messageLength = ('%.4x' % intMessageLength)
+                unitId = ('%.2x' % intUnitId)
+                headerTCP = transactionId + protocolId + messageLength + unitId
+                print("HEADER TCP: %s"%headerTCP)
+                if(funcionRecibida=="3"):
+                    self.obtenerRespuestas_funcion03_tcp(headerTCP, direccionRecibida, cantVariablesRecibidas,funcionRecibida)
+                else:
+                    tramaEnviada=self.armarTramaFuncion(headerTCP, direccionRecibida, cantVariablesRecibidas,funcionRecibida)
+                    comunicacion = self.enviarTramaTCP(tramaEnviada)
+                    if (comunicacion):
+                        #la trama y la devoluacion fue seteada en la funcion enviarTramaTCP
+                        print("Trama Solicitud: %s" % self.trama)
+                        self.controlador.imprimir_trama_enviada(self.trama)
+                        print("Trama devuelta: %s" % self.devolucion)
+                        self.controlador.imprimir_trama_recibida(self.devolucion)
+                        self.generarContendio(self.devolucion)
+                    else:
+                        self.controlador.imprimir_error_llamada("Se ha producido un error: ",self.descripcionError)
+            except Exception as e:
+                print (e)
+                self.controlador.imprimir_error_llamada("Error no se pudo completar la conexion ",e.message)
 
     def armarTramaFuncion(self,headerTCP,direccionRecibida,cantVariablesRecibidas,funcionRecibida):
         if(funcionRecibida=="3"):
@@ -514,6 +532,8 @@ class Conexion():
             if (cantVariablesRecibidas == "4"):
                 tramaTCP = headerTCP + functionCode + address + totalRegister + intCantBytes + self.variable1 + self.variable2 + self.variable3 + self.variable4
 
+            return tramaTCP
+
         else:
             intFunctionCode= self.funcion
             intAddress = int(direccionRecibida)
@@ -525,17 +545,9 @@ class Conexion():
 
             tramaTCP = headerTCP + functionCode + address + totalRegister
             print("TRAMA TCP: %s" %tramaTCP)
+            return tramaTCP
 
-        comunicacion = self.enviarTramaTCP(tramaTCP)
-        if (comunicacion):
-            print("Trama Solicitud: %s" % self.trama)
-            self.controlador.imprimir_trama_enviada(self.trama)
-            print("Trama devuelta: %s" % self.devolucion)
-            self.controlador.imprimir_trama_recibida(self.devolucion)
-            self.generarContendio(self.devolucion)
-        else:
-            self.controlador.imprimir_error_llamada("Se ha producido un error: ",
-                                                    self.descripcionError)
+
 
     def enviarTramaTCP(self,tramaTCP):
 
@@ -584,3 +596,94 @@ class Conexion():
         self.obtenerBinario(self.datosImprimir)
         self.obtenerDecimal(self.datosImprimir)
         self.obtenerHexadecimal(self.datosImprimir)
+
+
+    def obtenerRespuestas_funcion03_tcp(self,headerTCP, direccionRecibida, cantVariablesRecibidas,funcionRecibida):
+        t1 = threading.Thread(target=self.obtenerRespuestas_funcion03_tcp_thread(headerTCP, direccionRecibida, cantVariablesRecibidas,funcionRecibida))
+        t1.start()
+
+    def obtenerRespuestas_funcion03_tcp_thread(self,headerTCP, direccionRecibida, cantVariablesRecibidas,funcionRecibida):
+        self.cantidadRegistros=int(cantVariablesRecibidas)
+        llamada_exitosa = False
+        while (self.intentos > 0):
+            if (self.cantidadRegistros <= 125):
+                print("Iteraciones: 1")
+                tramaEnvio = self.armarTramaFuncion(headerTCP, direccionRecibida, cantVariablesRecibidas,funcionRecibida)
+                exitoComunicacion=self.enviarTramaTCP(tramaEnvio)
+                print("exito: %s"%exitoComunicacion)
+                if(exitoComunicacion):
+                    print("Trama Solicitud: %s" % self.trama)
+                    self.controlador.imprimir_trama_enviada(self.trama)
+                    print("Trama devuelta: %s" % self.devolucion)
+                    self.controlador.imprimir_trama_recibida(self.devolucion)
+                    self.generarContendio(self.devolucion)
+                    break
+                else:
+                    self.intentos-=1
+                    print("intentos restantes: %d"%self.intentos)
+                    if(self.intentos==0):
+                        print("se acabaron los intentos")
+                        self.controlador.imprimir_error_llamada("No hay mas intentos disponibles",
+                                                                self.descripcionError)
+                        break
+                time.sleep(5)
+            else:
+                    totalPedidos = self.cantidadRegistros * 2
+                    totalBytes = totalPedidos / float(250)
+                    iteraciones = math.ceil(totalBytes)
+                    print("Iteraciones: %d" % iteraciones)
+                    registros = 125
+                    registrosRecorridos = 0
+                    i = 1
+                    while (i <= iteraciones):
+                        print("Iteracion: %d" % i)
+                        if (i != iteraciones):
+                            tramaEnviar = self.armarTramaFuncion(headerTCP, registrosRecorridos, registros,funcionRecibida)
+                            exitoComunicacion = self.enviarTramaTCP(tramaEnviar)
+                            if (exitoComunicacion):
+                                i += 1
+                                print("Trama Solicitud: %s" % self.trama)
+                                self.controlador.imprimir_trama_enviada(self.trama)
+                                print("Trama devuelta: %s" % self.devolucion)
+                                self.controlador.imprimir_trama_recibida(self.devolucion)
+                                self.generarContendio(self.devolucion)
+                                registrosRecorridos += 125
+                                time.sleep(2)
+                            else:
+                                self.intentos -= 1
+                                print("intentos restantes: %d" % self.intentos)
+                                if (self.intentos == 0):
+                                    print("se acabaron los intentos")
+                                    self.controlador.imprimir_error_llamada("No hay mas intentos disponibles",
+                                                                            self.descripcionError)
+                                    break
+
+                        else:
+                            registrosRestantes = self.cantidadRegistros - registrosRecorridos
+                            tramaEnviar = self.armarTramaFuncion(headerTCP, registrosRecorridos, registrosRestantes,funcionRecibida)
+                            exitoComunicacion = self.enviarTramaTCP(tramaEnviar)
+                            time.sleep(2)
+                            if (exitoComunicacion):
+                                i += 1
+                                print("Trama Solicitud: %s" % self.trama)
+                                self.controlador.imprimir_trama_enviada(self.trama)
+                                print("Trama devuelta: %s" % self.devolucion)
+                                self.controlador.imprimir_trama_recibida(self.devolucion)
+                                self.generarContendio(self.devolucion)
+                                registrosRecorridos += 125
+                                time.sleep(2)
+                                llamada_exitosa = True
+                                break
+                            else:
+                                self.intentos -= 1
+                                print("intentos restantes: %d" % self.intentos)
+                                if (self.intentos == 0):
+                                    print("se acabaron los intentos")
+                                    self.controlador.imprimir_error_llamada("No hay mas intentos disponibles",
+                                                                            self.descripcionError)
+                                    break
+                                else:
+                                    continue
+
+            if llamada_exitosa:
+                break
