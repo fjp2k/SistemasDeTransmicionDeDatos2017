@@ -6,6 +6,15 @@ import re
 
 # Constantes
 
+REGEX_TIMESTAMP = '[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]'
+REGEX_DATOS = '[ \t]*[+-]?([0-9]*[.])?[0-9]+[ \t]*,' \
+              '[ \t]*[+-]?([0-9]*[.])?[0-9]+[ \t]*,' \
+              '[ \t]*[+-]?([0-9]*[.])?[0-9]+[ \t]*,' \
+              '[ \t]*[+-]?([0-9]*[.])?[0-9]+[ \t]*,' \
+              '[ \t]*[+-]?([0-9]*[.])?[0-9]+[ \t]*'
+
+REGEX_TRAMA = '>' + REGEX_TIMESTAMP + ';' + REGEX_DATOS + '<'
+
 KEY_EMAIL = 'email'
 KEY_TIMESTAMP = 'timestamp'
 KEY_DATOS = 'datos'
@@ -119,7 +128,7 @@ def procesar_emails(mailbox):
             trama_email = obtener_trama(numero_mensaje, mailbox)
             if trama_email is not None:
                 diccionario_datos = extraer_datos_trama(trama_email)
-                mensajes_emails.append(mensaje_email)
+                mensajes_emails.append(trama_email)
         else:
             print "Remitente invalido"
 
@@ -148,7 +157,7 @@ def obtener_trama(numero_mensaje, mensajes):
 def corroborar_trama(mensaje_email):
     try:
         s = mensaje_email
-        trama = re.search('>.+?<', s)
+        trama = re.search(REGEX_TRAMA, s)
 
         if trama:
             return trama.group()
@@ -159,10 +168,7 @@ def corroborar_trama(mensaje_email):
         return None
 
 def extraer_datos_trama(trama_email):
-
-
-
-
+    print trama_email
 
 
 def guardar_datos_trama(diccionario_trama):
