@@ -2,19 +2,20 @@ from poplib import *
 import threading
 import email
 import re
+import json
 
 
 # Constantes
-
+KEY_MENSAJES = 'mensajes'
 KEY_EMAIL = 'email'
 KEY_TIMESTAMP = 'timestamp'
-KEY_DATOS = 'datos'
+KEY_REMITENTES = 'remitentes'
 KEY_TEMPERATURA = 'temperatura'
 KEY_TENSION = 'tension'
 KEY_CORRIENTE = 'corriente'
 KEY_POTENCIA = 'potencia'
 KEY_PRESION = 'presion'
-
+KEY_REMITENTE = 'remitente'
 
 # Variables
 
@@ -89,7 +90,7 @@ def obtener_datos_almacenados():
     """
     datos_almacenados = leer_datos_bd()
 
-    for trama in datos_almacenados:
+    for trama in datos_almacenados[KEY_MENSAJES]:
         imprimir_trama(trama)
 
 
@@ -98,8 +99,9 @@ def leer_datos_bd():
     Devolver lista con cada una de las tramas almacenadas
     :return:
     """
-    # TODO
-    return []
+    with open('mensajes.txt') as json_file:
+        data = json.load(json_file)
+        return data
 
 
 def procesar_emails(mailbox):
@@ -132,8 +134,14 @@ def corroborar_remitente(remitente):
     :param remitente:
     :return: devuelve verdadero si esta el remitente esta en el json
     """
+    with open('remitentes.txt') as json_file:
+        data = json.load(json_file)
+        print data
+        for usuario in  data[KEY_REMITENTES]:
+            if usuario[KEY_REMITENTE] == remitente:
+                return True
+        return False
 
-    return True
 
 
 def obtener_trama(numero_mensaje, mensajes):
@@ -171,6 +179,11 @@ def guardar_datos_trama(diccionario_trama):
     :param trama:
     :return:
     """
+    with open('mensajes.txt') as json_file:
+        data = json.load(json_file)
+        data[KEY_MENSAJES].append(diccionario_trama)
+        with open('mensajes.txt', 'w') as json_file:
+            json.dump(data,json_file)
     # TODO
 
 
@@ -188,6 +201,12 @@ def imprimir_trama(diccionario_datos):
     corriente = ''
     potencia = ''
     presion = ''
+    timestamp = diccionario_datos[KEY_TIMESTAMP]
+    temperatura = diccionario_datos[KEY_TEMPERATURA]
+    tension = diccionario_datos[KEY_TENSION]
+    corriente = diccionario_datos[KEY_CORRIENTE]
+    potencia = diccionario_datos[KEY_POTENCIA]
+    presion = diccionario_datos[KEY_PRESION]
 
     string_a_imprimir = 'Timestamp: ' + timestamp + ' -> Temperatura: ' + temperatura \
                         + ' / Tension: ' + tension +  ' / Corriente: ' + corriente \
