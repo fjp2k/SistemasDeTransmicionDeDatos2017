@@ -45,7 +45,7 @@ class Controlador():
                                         servidor="localhost",
                                         username="test",
                                         contrasenia="123456",
-                                        frecuencia=0)
+                                        frecuencia=5)
 
     def desconectar(self):
         conexionPop.desconectar()
