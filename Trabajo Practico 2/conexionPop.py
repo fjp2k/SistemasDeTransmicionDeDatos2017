@@ -43,15 +43,17 @@ detener_proceso = None
 
 
 # Funciones
-
-def conectar_a_servidor(controlador, ssl, servidor, username, contrasenia, frecuencia, puerto=""):
+def iniciar_conector(controlador):
     global controlador_gui
+    controlador_gui = controlador
+
+
+def conectar_a_servidor(ssl, servidor, username, contrasenia, frecuencia, puerto=""):
     global user
     global frecuencia_recepcion
     global proceso_analisis_de_emails
     global detener_proceso
 
-    controlador_gui = controlador
     user = username
     frecuencia_recepcion = frecuencia
 
@@ -69,26 +71,33 @@ def desconectar():
 
 def ejecutar_conectar_a_servidor(ssl, servidor, puerto, contrasenia):
     controlador_gui.cambiar_mensaje_estado('Conectando a servidor')
+    mailbox = None
     try:
 
         obtener_datos_almacenados()
 
-        if ssl:
-            mailbox = POP3(host=servidor, port=puerto)
-        else:
-            mailbox = POP3(host=servidor)
-
-        mailbox.user(user)
-        mailbox.pass_(contrasenia)
-
         while not detener_proceso.is_set():
+            if ssl:
+                mailbox = POP3(host=servidor, port=puerto)
+            else:
+                mailbox = POP3(host=servidor)
+
+            mailbox.user(user)
+            mailbox.pass_(contrasenia)
+
             controlador_gui.cambiar_mensaje_estado('Conectado: obteniendo tramas')
-            procesar_emails(mailbox)
+            if procesar_emails(mailbox):
+                mailbox.quit()
 
             controlador_gui.cambiar_mensaje_estado('Conectando: sin actividad')
             detener_proceso.wait(frecuencia_recepcion)
 
-        controlador_gui.cambiar_mensaje_estado('Desconectando...')
+        if mailbox:
+            try:
+                mailbox.quit()
+            except Exception:
+                pass
+        controlador_gui.cambiar_mensaje_estado('Desconectado')
 
     except error_proto as err:
         controlador_gui.cambiar_mensaje_estado('Error en conexion: '+err.message)
@@ -122,35 +131,44 @@ def leer_datos_bd():
         return data
 
 
+# noinspection PyBroadException
 def procesar_emails(mailbox):
     """
     Traer emails del servidor, extrar los mensajes y procesarlos
     :param mailbox:
     :return:
     """
-    mensajes_emails = []
+    try:
+        num_messages = len(mailbox.list()[1])
+        for numero_mensaje in range(num_messages):
+            print 'Mensaje email: ' + str(numero_mensaje)
 
-    num_messages = len(mailbox.list()[1])
-    for numero_mensaje in range(num_messages):
-        print 'Mensaje email: ' + str(numero_mensaje)
+            if corroborar_remitente(numero_mensaje, mailbox):
 
-        if corroborar_remitente(numero_mensaje, mailbox):
+                trama_email = obtener_trama(numero_mensaje, mailbox)
+                if trama_email is not None:
+                    diccionario_datos = extraer_datos_trama(trama_email)
 
-            trama_email = obtener_trama(numero_mensaje, mailbox)
-            if trama_email is not None:
-                diccionario_datos = extraer_datos_trama(trama_email)
+                    guardar_datos_trama(diccionario_datos)
 
-                guardar_datos_trama(diccionario_datos)
+                    imprimir_trama(diccionario_datos)
 
-                imprimir_trama(diccionario_datos)
+                eliminar_email(mailbox)
+            else:
+                eliminar_email(mailbox)
+                print "Remitente invalido"
 
-                eliminar_email(numero_mensaje, mailbox)
-                mensajes_emails.append(trama_email)
-        else:
-            mailbox.dele(numero_mensaje)
-            print "Remitente invalido"
+        return True
 
-    return mensajes_emails
+    except error_proto as err:
+        controlador_gui.cambiar_mensaje_estado('Error en conexion: '+err.message)
+        print "Error: " + err.message
+        return False
+
+    except Exception as err:
+        controlador_gui.cambiar_mensaje_estado('Error en conexion: ' + err.message)
+        print "Error: " + err.message
+        return False
 
 
 def corroborar_remitente(numero_mensaje, mensajes):
@@ -186,9 +204,9 @@ def obtener_trama(numero_mensaje, mensajes):
     return None
 
 
-def eliminar_email(numero_email, mailbox):
+def eliminar_email(mailbox):
     try:
-        mailbox.dele(int(mailbox.list()[1][numero_email].split(' ')[0]))
+        mailbox.dele(int(mailbox.list()[1][0].split(' ')[0]))
     except error_proto as err:
         print "Error liminando mensaje"
         pass

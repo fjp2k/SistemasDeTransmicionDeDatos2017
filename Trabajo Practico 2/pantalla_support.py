@@ -5,6 +5,7 @@
 #    Oct 19, 2017 09:28:40 PM
 #    Oct 19, 2017 09:51:34 PM
 #    Oct 19, 2017 09:52:35 PM
+#    Nov 08, 2017 05:24:34 PM
 
 
 import sys
@@ -27,15 +28,25 @@ from  controlador import Controlador
 def desconectar():
     print('pantalla_support.desconectar')
     sys.stdout.flush()
+    controlador.desconectar()
+
+
+def cargar_datos():
+    print('pantalla_support.cargar_datos')
+    sys.stdout.flush()
+    controlador.cargar_datos_bd()
+
 
 def set_Tk_var():
     global che55
     che55 = StringVar()
 
+
 def conectar():
     print('pantalla_support.conectar')
     controlador.conectar()
     sys.stdout.flush()
+
 
 def init(top, gui, *args, **kwargs):
     global w, top_level, root, controlador
@@ -46,6 +57,7 @@ def init(top, gui, *args, **kwargs):
     controlador = Controlador(gui=w)
     controlador.configurar_gui()
 
+
 def destroy_window():
     # Function which closes the window.
     global top_level
@@ -55,6 +67,9 @@ def destroy_window():
 if __name__ == '__main__':
     import pantalla
     pantalla.vp_start_gui()
+
+
+
 
 
 

@@ -75,6 +75,9 @@ proc vTclWindow.top37 {base} {
     wm deiconify $top
     wm title $top "New Toplevel 1"
     vTcl:DefineAlias "$top" "Toplevel1" vTcl:Toplevel:WidgetProc "" 1
+    ttk::style configure Label -background #d9d9d9
+    ttk::style configure Label -foreground #000000
+    ttk::style configure Label -font TkDefaultFont
     label $top.lab38 \
         -activebackground {#f9f9f9} -activeforeground black -anchor w \
         -background {#f1f1f1} -disabledforeground {#a3a3a3} \
@@ -89,7 +92,9 @@ proc vTclWindow.top37 {base} {
     vTcl:DefineAlias "$top.but40" "conectar_btn" vTcl:WidgetProc "Toplevel1" 1
     entry $top.ent41 \
         -background white -disabledforeground {#a3a3a3} -font TkFixedFont \
-        -foreground {#000000} -insertbackground black 
+        -foreground {#000000} -highlightbackground {#d9d9d9} \
+        -highlightcolor black -insertbackground black \
+        -selectbackground {#c4c4c4} -selectforeground black 
     vTcl:DefineAlias "$top.ent41" "servidor_entry" vTcl:WidgetProc "Toplevel1" 1
     label $top.cpd45 \
         -activebackground {#f9f9f9} -activeforeground black -anchor w \
@@ -154,22 +159,35 @@ proc vTclWindow.top37 {base} {
     vTcl:DefineAlias "$top.but56" "desconectar_btn" vTcl:WidgetProc "Toplevel1" 1
     listbox $top.lis57 \
         -background white -disabledforeground {#a3a3a3} -font TkFixedFont \
-        -foreground {#000000} -height 256 -width 654 
+        -foreground {#000000} -height 256 -highlightbackground {#d9d9d9} \
+        -highlightcolor black -selectbackground {#c4c4c4} \
+        -selectforeground black -width 654 
     .top37.lis57 configure -font TkFixedFont
     .top37.lis57 insert end text
     vTcl:DefineAlias "$top.lis57" "info_listbox" vTcl:WidgetProc "Toplevel1" 1
     label $top.lab58 \
-        -anchor w -background {#f1f1f1} -disabledforeground {#a3a3a3} \
-        -foreground {#8000ff} -text Desconectado 
+        -activebackground {#f9f9f9} -activeforeground black -anchor w \
+        -background {#f1f1f1} -disabledforeground {#a3a3a3} \
+        -foreground {#8000ff} -highlightbackground {#d9d9d9} \
+        -highlightcolor black -text Desconectado 
     vTcl:DefineAlias "$top.lab58" "estado_conexion_info" vTcl:WidgetProc "Toplevel1" 1
     label $top.lab59 \
-        -anchor e -background {#f1f1f1} -disabledforeground {#a3a3a3} \
-        -foreground {#000000} -text {Estado conexion:} 
+        -activebackground {#f9f9f9} -activeforeground black -anchor e \
+        -background {#f1f1f1} -disabledforeground {#a3a3a3} \
+        -foreground {#000000} -highlightbackground {#d9d9d9} \
+        -highlightcolor black -text {Estado conexion:} 
     vTcl:DefineAlias "$top.lab59" "estado_conexion_lb" vTcl:WidgetProc "Toplevel1" 1
     menu $top.m60 \
         -activebackground {#d8d8d8} -activeforeground {#000000} \
         -background {#d9d9d9} -font TkMenuFont -foreground {#000000} \
         -tearoff 0 
+    button $top.but37 \
+        -activebackground {#d9d9d9} -activeforeground {#000000} \
+        -background {#d9d9d9} -command cargar_datos \
+        -disabledforeground {#a3a3a3} -foreground {#000000} \
+        -highlightbackground {#d9d9d9} -highlightcolor black -pady 0 \
+        -text {Cargar Datos} 
+    vTcl:DefineAlias "$top.but37" "CargarDatosBtn" vTcl:WidgetProc "Toplevel1" 1
     ###################
     # SETTING GEOMETRY
     ###################
@@ -220,6 +238,8 @@ proc vTclWindow.top37 {base} {
     place $top.lab59 \
         -in $top -x 620 -y 110 -width 177 -relwidth 0 -height 31 -relheight 0 \
         -anchor ne -bordermode ignore 
+    place $top.but37 \
+        -in $top -x 340 -y 120 -anchor nw -bordermode ignore 
 
     vTcl:FireEvent $base <<Ready>>
 }

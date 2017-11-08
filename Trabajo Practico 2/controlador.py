@@ -19,6 +19,7 @@ class Controlador():
         self.gui = gui
 
         self.index_textbox = 0
+        conexionPop.iniciar_conector(self)
 
     def configurar_gui(self):
         """
@@ -39,19 +40,33 @@ class Controlador():
         """
         print "Configurando GUI"
 
+        self.gui.servidor_entry.insert(0,'localhost')
+        self.gui.usuario_entry.insert(0,'test')
+        self.gui.contrasenia_entry.insert(0,'123456')
+        self.gui.frecuencia_entry.insert(0,'5')
+        self.gui.puerto_entry.insert(0,'')
+
+        self.gui.ssl_check.set(0)
+
     def conectar(self):
-        conexionPop.conectar_a_servidor(controlador=self,
-                                        ssl=False,
-                                        servidor="localhost",
-                                        username="test",
-                                        contrasenia="123456",
-                                        frecuencia=5)
+
+        if self.verificar_datos():
+            conexionPop.conectar_a_servidor(ssl=self.gui.ssl_check.get(),
+                                            servidor=self.gui.servidor_entry.get(),
+                                            username=self.gui.usuario_entry.get(),
+                                            contrasenia=self.gui.contrasenia_entry.get(),
+                                            frecuencia=int(self.gui.frecuencia_entry.get()))
+        else:
+            self.cambiar_mensaje_estado("Datos incorrectos")
 
     def desconectar(self):
         conexionPop.desconectar()
 
     def cambiar_mensaje_estado(self, mensaje):
         self.gui.estado_conexion_info.configure(text=''+mensaje+'')
+
+    def cargar_datos_bd(self):
+        conexionPop.obtener_datos_almacenados()
 
     def limpiar_pantalla(self):
         self.gui.info_listbox.delete(0, END)
@@ -60,3 +75,6 @@ class Controlador():
     def imprimir(self, mensaje):
         self.gui.info_listbox.insert(self.index_textbox, mensaje)
         self.index_textbox += 1
+
+    def verificar_datos(self):
+        return True
