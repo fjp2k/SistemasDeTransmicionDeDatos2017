@@ -146,9 +146,10 @@ proc vTclWindow.top37 {base} {
     vTcl:DefineAlias "$top.cpd52" "puerto_entry" vTcl:WidgetProc "Toplevel1" 1
     checkbutton $top.che55 \
         -activebackground {#d9d9d9} -activeforeground {#000000} \
-        -background {#f1f1f1} -disabledforeground {#a3a3a3} \
-        -foreground {#000000} -highlightbackground {#d9d9d9} \
-        -highlightcolor black -justify left -text SSL -variable che55 
+        -background {#f1f1f1} -command check_ssl \
+        -disabledforeground {#a3a3a3} -foreground {#000000} \
+        -highlightbackground {#d9d9d9} -highlightcolor black -justify left \
+        -text SSL -variable che55 
     vTcl:DefineAlias "$top.che55" "ssl_check" vTcl:WidgetProc "Toplevel1" 1
     button $top.but56 \
         -activebackground {#d9d9d9} -activeforeground {#000000} \
@@ -188,6 +189,13 @@ proc vTclWindow.top37 {base} {
         -highlightbackground {#d9d9d9} -highlightcolor black -pady 0 \
         -text {Cargar Datos} 
     vTcl:DefineAlias "$top.but37" "CargarDatosBtn" vTcl:WidgetProc "Toplevel1" 1
+    button $top.but38 \
+        -activebackground {#d9d9d9} -activeforeground {#000000} \
+        -background {#d9d9d9} -command limpiar_pantalla \
+        -disabledforeground {#a3a3a3} -foreground {#000000} \
+        -highlightbackground {#d9d9d9} -highlightcolor black -pady 0 \
+        -text Limpiar 
+    vTcl:DefineAlias "$top.but38" "LimpiarBtn" vTcl:WidgetProc "Toplevel1" 1
     ###################
     # SETTING GEOMETRY
     ###################
@@ -239,7 +247,10 @@ proc vTclWindow.top37 {base} {
         -in $top -x 620 -y 110 -width 177 -relwidth 0 -height 31 -relheight 0 \
         -anchor ne -bordermode ignore 
     place $top.but37 \
-        -in $top -x 340 -y 120 -anchor nw -bordermode ignore 
+        -in $top -x 340 -y 100 -anchor nw -bordermode ignore 
+    place $top.but38 \
+        -in $top -x 340 -y 150 -width 118 -relwidth 0 -height 42 -relheight 0 \
+        -anchor nw -bordermode ignore 
 
     vTcl:FireEvent $base <<Ready>>
 }

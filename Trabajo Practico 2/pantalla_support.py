@@ -6,13 +6,14 @@
 #    Oct 19, 2017 09:51:34 PM
 #    Oct 19, 2017 09:52:35 PM
 #    Nov 08, 2017 05:24:34 PM
-
+#    Nov 08, 2017 10:20:35 PM
 
 import sys
 
 try:
     from Tkinter import *
 except ImportError:
+    # noinspection PyUnresolvedReferences
     from tkinter import *
 
 try:
@@ -22,13 +23,25 @@ except ImportError:
     import tkinter.ttk as ttk
     py3 = 1
 
-from  controlador import Controlador
+from controlador import Controlador
 
 
 def desconectar():
     print('pantalla_support.desconectar')
     sys.stdout.flush()
     controlador.desconectar()
+
+
+def check_ssl():
+    print('pantalla_support.check_ssl')
+    sys.stdout.flush()
+    controlador.accion_seleccion_ssl()
+
+
+def limpiar_pantalla():
+    print('pantalla_support.limpiar_pantalla')
+    sys.stdout.flush()
+    controlador.limpiar_pantalla()
 
 
 def cargar_datos():
@@ -64,17 +77,7 @@ def destroy_window():
     top_level.destroy()
     top_level = None
 
+
 if __name__ == '__main__':
     import pantalla
     pantalla.vp_start_gui()
-
-
-
-
-
-
-
-
-
-
-

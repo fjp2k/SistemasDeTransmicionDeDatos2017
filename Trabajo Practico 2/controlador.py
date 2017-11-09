@@ -43,10 +43,13 @@ class Controlador:
         """
         print "Configurando GUI"
 
+        self.gui.desconectar_btn.config(state=DISABLED)
+
         self.gui.servidor_entry.insert(0, 'localhost')
         self.gui.usuario_entry.insert(0, 'test')
         self.gui.contrasenia_entry.insert(0, '123456')
         self.gui.frecuencia_entry.insert(0, '5')
+        self.gui.puerto_entry.config(state=DISABLED)
         self.gui.puerto_entry.insert(0, '')
 
         self.gui.ssl_check.configure(variable=self.valor_ssl, onvalue=1, offvalue=0)
@@ -57,6 +60,7 @@ class Controlador:
 
             if self.valor_ssl.get() == 1:
                 ssl_activado = True
+                self.set_estado_conectado()
                 conexionPop.conectar_a_servidor(ssl=ssl_activado,
                                                 servidor=self.gui.servidor_entry.get(),
                                                 username=self.gui.usuario_entry.get(),
@@ -66,6 +70,7 @@ class Controlador:
                                                 )
             else:
                 ssl_activado = False
+                self.set_estado_conectado()
                 conexionPop.conectar_a_servidor(ssl=ssl_activado,
                                                 servidor=self.gui.servidor_entry.get(),
                                                 username=self.gui.usuario_entry.get(),
@@ -73,11 +78,44 @@ class Controlador:
                                                 frecuencia=int(self.gui.frecuencia_entry.get())
                                                 )
         else:
+            self.set_estado_desconectado()
             self.cambiar_mensaje_estado("Datos incorrectos")
 
     # noinspection PyMethodMayBeStatic
     def desconectar(self):
+        self.set_estado_desconectado()
         conexionPop.desconectar()
+
+    def set_estado_conectado(self):
+        self.gui.servidor_entry.config(state=DISABLED)
+        self.gui.usuario_entry.config(state=DISABLED)
+        self.gui.contrasenia_entry.config(state=DISABLED)
+        self.gui.frecuencia_entry.config(state=DISABLED)
+        self.gui.puerto_entry.config(state=DISABLED)
+        self.gui.ssl_check.config(state=DISABLED)
+
+        self.gui.conectar_btn.config(state=DISABLED)
+        self.gui.desconectar_btn.config(state=NORMAL)
+
+    def set_estado_desconectado(self):
+        self.gui.servidor_entry.config(state=NORMAL)
+        self.gui.usuario_entry.config(state=NORMAL)
+        self.gui.contrasenia_entry.config(state=NORMAL)
+        self.gui.frecuencia_entry.config(state=NORMAL)
+        if self.valor_ssl.get() == 1:
+            self.gui.puerto_entry.config(state=NORMAL)
+        else:
+            self.gui.puerto_entry.config(state=DISABLED)
+        self.gui.ssl_check.config(state=NORMAL)
+
+        self.gui.conectar_btn.config(state=NORMAL)
+        self.gui.desconectar_btn.config(state=DISABLED)
+
+    def accion_seleccion_ssl(self):
+        if self.valor_ssl.get() == 1:
+            self.gui.puerto_entry.config(state=NORMAL)
+        else:
+            self.gui.puerto_entry.config(state=DISABLED)
 
     def cambiar_mensaje_estado(self, mensaje):
         self.gui.estado_conexion_info.configure(text=''+mensaje+'')
@@ -95,6 +133,7 @@ class Controlador:
         self.index_textbox += 1
 
     def imprimir_error(self, mensaje):
+        self.set_estado_desconectado()
         self.limpiar_pantalla()
         self.imprimir(mensaje)
 

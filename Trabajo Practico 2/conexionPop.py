@@ -114,7 +114,7 @@ def ejecutar_conectar_a_servidor(ssl, servidor, puerto, contrasenia):
         imprimir_error("La direccion de servidor incorrecta")
 
     except socket.error:
-        imprimir_error("La direccion del servidor o del puerto es incorrecta")
+        imprimir_error("La direccion del servidor es incorrecta")
 
     except Exception as err:
         imprimir_error(err.message)
