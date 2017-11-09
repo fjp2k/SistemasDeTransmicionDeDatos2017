@@ -1,3 +1,4 @@
+import socket
 from poplib import *
 import threading
 import json
@@ -45,7 +46,10 @@ detener_proceso = None
 # Funciones
 def iniciar_conector(controlador):
     global controlador_gui
+    global detener_proceso
     controlador_gui = controlador
+    detener_proceso = threading.Event()
+    detener_proceso.set()
 
 
 def conectar_a_servidor(ssl, servidor, username, contrasenia, frecuencia, puerto=""):
@@ -65,8 +69,11 @@ def conectar_a_servidor(ssl, servidor, username, contrasenia, frecuencia, puerto
 
 
 def desconectar():
-    controlador_gui.cambiar_mensaje_estado('Desconectando...')
-    detener_proceso.set()
+    if not detener_proceso.is_set():
+        controlador_gui.cambiar_mensaje_estado('Desconectando...')
+        detener_proceso.set()
+    else:
+        controlador_gui.cambiar_mensaje_estado('Desconectado')
 
 
 def ejecutar_conectar_a_servidor(ssl, servidor, puerto, contrasenia):
@@ -93,6 +100,7 @@ def ejecutar_conectar_a_servidor(ssl, servidor, puerto, contrasenia):
             detener_proceso.wait(frecuencia_recepcion)
 
         if mailbox:
+            # noinspection PyBroadException
             try:
                 mailbox.quit()
             except Exception:
@@ -100,12 +108,16 @@ def ejecutar_conectar_a_servidor(ssl, servidor, puerto, contrasenia):
         controlador_gui.cambiar_mensaje_estado('Desconectado')
 
     except error_proto as err:
-        controlador_gui.cambiar_mensaje_estado('Error en conexion: '+err.message)
-        print "Error: " + err.message
+        imprimir_error(err.message)
+
+    except socket.gaierror:
+        imprimir_error("La direccion de servidor incorrecta")
+
+    except socket.error:
+        imprimir_error("La direccion del servidor o del puerto es incorrecta")
 
     except Exception as err:
-        controlador_gui.cambiar_mensaje_estado('Error en conexion: ' + err.message)
-        print "Error: " + err.message
+        imprimir_error(err.message)
 
 
 def obtener_datos_almacenados():
@@ -161,13 +173,11 @@ def procesar_emails(mailbox):
         return True
 
     except error_proto as err:
-        controlador_gui.cambiar_mensaje_estado('Error en conexion: '+err.message)
-        print "Error: " + err.message
+        imprimir_error(err.message)
         return False
 
     except Exception as err:
-        controlador_gui.cambiar_mensaje_estado('Error en conexion: ' + err.message)
-        print "Error: " + err.message
+        imprimir_error(err.message)
         return False
 
 
@@ -208,8 +218,9 @@ def eliminar_email(mailbox):
     try:
         mailbox.dele(int(mailbox.list()[1][0].split(' ')[0]))
     except error_proto as err:
-        print "Error liminando mensaje"
+        print "Error eliminando mensaje: " + err.message
         pass
+
 
 def extraer_datos_trama(trama_email):
 
@@ -266,3 +277,13 @@ def imprimir_trama(diccionario_datos):
                         + ' / Potencia: ' + potencia + ' / Presion: ' + presion
 
     controlador_gui.imprimir(string_a_imprimir)
+
+
+def imprimir_error(mensaje):
+    if not detener_proceso.is_set():
+        controlador_gui.cambiar_mensaje_estado('Error de conexion')
+        controlador_gui.imprimir_error(mensaje)
+        print "Error: " + mensaje
+        detener_proceso.set()
+    else:
+        controlador_gui.cambiar_mensaje_estado('Desconectado')
