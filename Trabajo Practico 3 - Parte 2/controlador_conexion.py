@@ -4,13 +4,15 @@ import conexionPop
 SERVIDOR = 'localhost'
 USERNAME = 'test'
 CONTRASENIA = '123456'
-FRECUENCIA = '5'
+FRECUENCIA = 5
 
-SSL = True
+SSL = False
 PUERTO = ''
 
 
 def conectar():
+
+    conexionPop.iniciar_conector()
 
     if SSL:
         conexionPop.conectar_a_servidor(ssl=SSL,
@@ -30,4 +32,4 @@ def conectar():
 
 
 def desconectar():
-        conexionPop.desconectar()
+    conexionPop.desconectar()

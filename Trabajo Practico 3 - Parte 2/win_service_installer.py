@@ -1,32 +1,27 @@
-import win32serviceutil
 import win32service
-import win32event
-import servicemanager
-import socket
+import win32serviceutil
+
+import controlador_conexion
 
 
-class AppServerSvc (win32serviceutil.ServiceFramework):
-    _svc_name_ = "ServicioPop3Transmision"
-    _svc_display_name_ = "Servicio Pop3 Transmision"
+class PySvc(win32serviceutil.ServiceFramework):
+    _svc_name_ = "ServicioPopTransmision"
+    _svc_display_name_ = "Servicio Pop Transmision de datos"
+    _svc_description_ = "Transmision de datos Practico 3 Servicio Pop"
 
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
-        self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
-        socket.setdefaulttimeout(60)
 
-    def SvcStop(self):
-        self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
-        win32event.SetEvent(self.hWaitStop)
-
+    # Inicio servicio
     def SvcDoRun(self):
-        servicemanager.LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE,
-                              servicemanager.PYS_SERVICE_STARTED,
-                              (self._svc_name_, ''))
-        self.main()
+        controlador_conexion.conectar()
 
-    def main(self):
-        pass
+    # Finalizacion servicio
+    def SvcStop(self):
+        controlador_conexion.desconectar()
+        # tell the SCM we're shutting down
+        self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
 
 
 if __name__ == '__main__':
-    win32serviceutil.HandleCommandLine(AppServerSvc)
+    win32serviceutil.HandleCommandLine(PySvc)
