@@ -19,11 +19,12 @@ class Controlador:
 
         self.gui = gui
 
+        self.index_textbox_1 = 0
+        self.index_textbox_2 = 0
+
     def configurar_gui(self):
 
         print "Configurando GUI"
-
-        self.gui.desconectar_btn.config(state=DISABLED)
 
 
     def conectar_protocolo_1(self):
@@ -52,23 +53,23 @@ class Controlador:
 
     def limpiar_pantalla_protocolo_1(self):
         self.gui.Entry5.delete(0, END)
-        self.index_textbox = 0
+        self.index_textbox_1 = 0
 
     def limpiar_pantalla_protocolo_2(self):
         self.gui.tension2.delete(0, END)
-        self.index_textbox = 0
+        self.index_textbox_2 = 0
 
     def imprimir_protocolo_1(self, mensaje):
-        self.gui.Entry5.insert(self.index_textbox, mensaje)
-        self.index_textbox += 1
+        self.gui.Entry5.insert(self.index_textbox_1, mensaje)
+        self.index_textbox_1 += 1
 
     def imprimir_protocolo_2(self, mensaje):
-        self.gui.tension2.insert(self.index_textbox, mensaje)
-        self.index_textbox += 1
+        self.gui.tension2.insert(self.index_textbox_2, mensaje)
+        self.index_textbox_2 += 1
 
     def verificar_datos_protocolo_1(self):
 
-        self.limpiar_pantalla()
+        self.limpiar_pantalla_protocolo_1()
 
         datos_correctos = True
 
@@ -133,7 +134,7 @@ class Controlador:
 
     def verificar_datos_protocolo_2(self):
 
-        self.limpiar_pantalla()
+        self.limpiar_pantalla_protocolo_2()
 
         datos_correctos = True
 

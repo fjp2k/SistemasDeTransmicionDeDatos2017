@@ -44,10 +44,13 @@ def desconectar_protocolo_2():
     controlador.desconectar_protocolo_2
 
 def init(top, gui, *args, **kwargs):
-    global w, top_level, root
+    global w, top_level, root, controlador
     w = gui
     top_level = top
     root = top
+
+    controlador = Controlador(gui=w)
+    controlador.configurar_gui()
 
 def destroy_window():
     # Function which closes the window.
