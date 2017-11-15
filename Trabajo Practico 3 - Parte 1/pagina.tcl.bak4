@@ -63,7 +63,7 @@ proc vTclWindow.top37 {base} {
         -background {#d9d9d9} -highlightbackground {#d9d9d9} \
         -highlightcolor black 
     wm focusmodel $top passive
-    wm geometry $top 1354x705+-17+2
+    wm geometry $top 1366x705+384+119
     update
     # set in toplevel.wgt.
     global vTcl
@@ -72,7 +72,6 @@ proc vTclWindow.top37 {base} {
     wm minsize $top 120 1
     wm overrideredirect $top 0
     wm resizable $top 1 1
-    wm deiconify $top
     wm title $top "New Toplevel 1"
     vTcl:DefineAlias "$top" "Toplevel1" vTcl:Toplevel:WidgetProc "" 1
     ttk::style configure Label -background #d9d9d9
@@ -100,7 +99,7 @@ proc vTclWindow.top37 {base} {
         -activebackground {#f9f9f9} -activeforeground black \
         -background {#d9d9d9} -disabledforeground {#a3a3a3} \
         -foreground {#000000} -highlightbackground {#d9d9d9} \
-        -highlightcolor black -text DIRECCION: 
+        -highlightcolor black -text DIRECCIÓN: 
     vTcl:DefineAlias "$top.lab43" "Label4" vTcl:WidgetProc "Toplevel1" 1
     label $top.lab44 \
         -activebackground {#f9f9f9} -activeforeground black \
@@ -224,32 +223,28 @@ proc vTclWindow.top37 {base} {
     vTcl:DefineAlias "$top.cpd68" "tension2" vTcl:WidgetProc "Toplevel1" 1
     button $top.but70 \
         -activebackground {#d9d9d9} -activeforeground {#000000} \
-        -background {#d9d9d9} -command conectar_protocolo_1 \
-        -disabledforeground {#a3a3a3} -foreground {#000000} \
-        -highlightbackground {#d9d9d9} -highlightcolor black -pady 0 \
-        -text CONECTAR 
+        -background {#d9d9d9} -disabledforeground {#a3a3a3} \
+        -foreground {#000000} -highlightbackground {#d9d9d9} \
+        -highlightcolor black -pady 0 -text CONECTAR 
     vTcl:DefineAlias "$top.but70" "conectar1" vTcl:WidgetProc "Toplevel1" 1
     button $top.but71 \
         -activebackground {#d9d9d9} -activeforeground {#000000} \
-        -background {#d9d9d9} -command desconectar_protocolo_1 \
-        -disabledforeground {#a3a3a3} -foreground {#000000} \
-        -highlightbackground {#d9d9d9} -highlightcolor black -pady 0 \
-        -text DESCONECTAR 
-    vTcl:DefineAlias "$top.but71" "desconectar1" vTcl:WidgetProc "Toplevel1" 1
+        -background {#d9d9d9} -disabledforeground {#a3a3a3} \
+        -foreground {#000000} -highlightbackground {#d9d9d9} \
+        -highlightcolor black -pady 0 -text BORRAR 
+    vTcl:DefineAlias "$top.but71" "borrar1" vTcl:WidgetProc "Toplevel1" 1
     button $top.but72 \
         -activebackground {#d9d9d9} -activeforeground {#000000} \
-        -background {#d9d9d9} -command conectar_protocolo_2 \
-        -disabledforeground {#a3a3a3} -foreground {#000000} \
-        -highlightbackground {#d9d9d9} -highlightcolor black -pady 0 \
-        -text CONECTAR 
+        -background {#d9d9d9} -disabledforeground {#a3a3a3} \
+        -foreground {#000000} -highlightbackground {#d9d9d9} \
+        -highlightcolor black -pady 0 -text CONECTAR 
     vTcl:DefineAlias "$top.but72" "conectar2" vTcl:WidgetProc "Toplevel1" 1
     button $top.but73 \
         -activebackground {#d9d9d9} -activeforeground {#000000} \
-        -background {#d9d9d9} -command desconectar_protocolo_2 \
-        -disabledforeground {#a3a3a3} -foreground {#000000} \
-        -highlightbackground {#d9d9d9} -highlightcolor black -pady 0 \
-        -text DESCONECTAR 
-    vTcl:DefineAlias "$top.but73" "desconectar2" vTcl:WidgetProc "Toplevel1" 1
+        -background {#d9d9d9} -disabledforeground {#a3a3a3} \
+        -foreground {#000000} -highlightbackground {#d9d9d9} \
+        -highlightcolor black -pady 0 -text BORRAR 
+    vTcl:DefineAlias "$top.but73" "borrar2" vTcl:WidgetProc "Toplevel1" 1
     ###################
     # SETTING GEOMETRY
     ###################

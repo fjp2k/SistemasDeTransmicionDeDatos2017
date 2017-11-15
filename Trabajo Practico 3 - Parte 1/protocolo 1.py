@@ -1,3 +1,4 @@
+from  bytes2string import *
 id_equipo_1 = 0
 id_codigo_funcion_1 = 0
 id_direccion_1 = 0
@@ -55,12 +56,15 @@ def armar_trama_protocolo():
     id_codigo_funcion = id_codigo_funcion_1[2:id_codigo_funcion_1.__len__()]
     id_direccion = id_direccion_1[2:id_direccion_1.__len__()]
     id_cantidad = id_cantidad_variables[2:id_cantidad_variables.__len__()]
-    trama = id_equipo + id_codigo_funcion+ id_direccion + id_cantidad
-    print "TRAMA PROTOCOLO 1: %s" %trama
+    trama_protocolo_1 = id_equipo + id_codigo_funcion+ id_direccion + id_cantidad
+    print "TRAMA PROTOCOLO 1: %s" %trama_protocolo_1
 
+def armart_trama_bytes():
+    longitud = str(trama_protocolo_1).__len__()
+    print longitud
 
 if(verificar_id_equipo(12) and verificar_codigo_funcion(20) and verificar_direccion(300) and verificar_cantidad_variables(4)):
     armar_trama_protocolo()
 else:
     print "ha ingresado valores incorrectos"
-
+armart_trama_bytes()
