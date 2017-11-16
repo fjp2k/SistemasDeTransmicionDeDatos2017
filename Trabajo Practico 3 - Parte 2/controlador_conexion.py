@@ -33,3 +33,5 @@ def conectar():
 
 def desconectar():
     conexionPop.desconectar()
+
+#conectar()
