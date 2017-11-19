@@ -9,9 +9,9 @@ from emailLogger import EmailLogger
 # Constantes
 
 DIRECCION_ARCHIVO_TRAMAS = 'C:/Users/Facu/Documents/UTN/Sistemas de transmision de datos/Repositorio/' \
-                           'Trabajo Practico 3 - Parte 2/tramas.txt'
+                           'Trabajo Practico 3 - Parte 2/tramas.json'
 DIRECCION_ARCHIVO_REMITENTES = 'C:/Users/Facu/Documents/UTN/Sistemas de transmision de datos/Repositorio/' \
-                               'Trabajo Practico 3 - Parte 2/remitentes.txt'
+                               'Trabajo Practico 3 - Parte 2/remitentes.json'
 
 
 REGEX_TIMESTAMP = '[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]'
@@ -32,6 +32,7 @@ KEY_EMAIL = 'email'
 KEY_REMITENTES = 'remitentes'
 KEY_REMITENTE = 'remitente'
 
+KEY_ID_TRAMA = 'id'
 KEY_TIMESTAMP = 'timestamp'
 KEY_TEMPERATURA = 'temperatura'
 KEY_TENSION = 'tension'
@@ -50,6 +51,7 @@ proceso_analisis_de_emails = None
 detener_proceso = None
 
 ultimo_remitente = None
+ultimo_id_trama = 1
 
 
 # Funciones
@@ -266,10 +268,23 @@ def guardar_datos_trama(diccionario_trama):
 
     with file_tramas as json_file:
         data = json.load(json_file)
+        diccionario_trama[KEY_ID_TRAMA] = obtener_ultimo_id_tramas(datos=data) + 1
         data[KEY_TRAMAS].append(diccionario_trama)
         with open(DIRECCION_ARCHIVO_TRAMAS, 'w') as json_file_w:
             logger.info(msg='Guardando trama')
             json.dump(data, json_file_w)
+
+
+def obtener_ultimo_id_tramas(datos):
+    logger.info(msg="Obteniendo ultimo id de tramas")
+    ids_tramas = [0]
+    for trama in datos[KEY_TRAMAS]:
+        if KEY_ID_TRAMA in trama and isinstance(trama[KEY_ID_TRAMA], int):
+            ids_tramas.append(trama[KEY_ID_TRAMA])
+        else:
+            logger.warning(msg="No se encontro id en trama")
+
+    return max(ids_tramas)
 
 
 def imprimir_trama(diccionario_datos):

@@ -1,5 +1,5 @@
 {
-  "tamanio_kb" : 2,
+  "tamanio_kb" : 1024,
   "cantidad_archivos" : 5,
   "nivel_log" : "DEBUG"
 }

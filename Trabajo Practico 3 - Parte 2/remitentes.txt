@@ -1,1 +1,0 @@
-{"remitentes":[{"remitente":"pablo@campo.com"},{"remitente":"facu@mail.com"}]}
