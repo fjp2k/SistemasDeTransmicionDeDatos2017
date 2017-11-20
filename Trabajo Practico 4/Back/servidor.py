@@ -1,9 +1,11 @@
 from flask import Flask, json, request, jsonify
+from flask_cors import CORS
 
 from utils import armar_error, corroborar_datos_trama
 from constantes import *
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route("/getTramas", methods=['GET'])

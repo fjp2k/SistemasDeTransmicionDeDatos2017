@@ -1,43 +1,51 @@
 <!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-   <script src="comunicacion.js"></script>
-   <link rel="stylesheet" href="estilo.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="comunicacion.js"></script>
+    <link rel="stylesheet" href="estilo.css">
 </head>
-<body>
-<nav class="navbar navbar-default" co>
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">Transmisión de datos</a>
-    </div>
-  </div>
-</nav>
-<div class="container">
-<img src="arduino-plug-in2_grande.jpg" align="middle">
-  <h2>Mediciones</h2>       
-  <table id="tabla" class="table table-striped table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Timestamp</th>
-        <th>Remitente</th>
-        <th>Temperatura</th>
-        <th>Tensión</th>
-        <th>Corriente</th>
-        <th>Potencia</th>
-        <th>Presión</th>
-      </tr>
-    </thead>
-    <tbody><tr><td>16:03</td><td>pablo</td><td>13</td><td>1</td><td>3</td><td>2</td><td>4</td></tr>
-    </tbody>
-  </table>
-</div>
-<div id="demo">
-  hola
 
+<body>
+
+<nav class="navbar navbar-default" co>
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Transmisión de datos</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    <h2>Mediciones</h2>
+    <input type="text" id="myInput" onkeyup="filtrarTabla()" placeholder="Filtar por remitente..">
+    <div style="height:500px;overflow:auto;">
+
+        <table id="tabla" class="table table-fixed table-striped table-bordered table-condensed">
+            <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Remitente</th>
+                <th>Temperatura</th>
+                <th>Tensión</th>
+                <th>Corriente</th>
+                <th>Potencia</th>
+                <th>Presión</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <img src="arduino-plug-in2_grande.jpg" align="center">
 </div>
+
 </body>
+
 </html>
